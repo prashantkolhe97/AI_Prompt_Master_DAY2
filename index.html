@@ -1,0 +1,2418 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Prompt Master – Day 2: Smart Prompt Writing Techniques</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          },
+          colors: {
+            neonCyan: '#06b6d4',
+            neonPurple: '#a855f7',
+            neonPink: '#ec4899',
+            darkBg: '#0b0f19',
+            darkCard: '#131c31',
+          },
+          animation: {
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float-slow': 'float 6s ease-in-out infinite',
+            'spin-slow': 'spin 12s linear infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom premium styling */
+    body {
+      overflow-x: hidden;
+    }
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .dark .glass-panel {
+      background: rgba(19, 28, 49, 0.4);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .light-theme {
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    .light-theme .glass-panel {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    }
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(108, 92, 231, 0.3);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(108, 92, 231, 0.5);
+    }
+    .neon-text-glow {
+      text-shadow: 0 0 10px rgba(6, 182, 212, 0.5), 0 0 20px rgba(168, 85, 247, 0.3);
+    }
+    .badge-unlocked {
+      animation: badgeGlow 2s infinite alternate;
+    }
+    @keyframes badgeGlow {
+      from { box-shadow: 0 0 5px rgba(168, 85, 247, 0.4); }
+      to { box-shadow: 0 0 20px rgba(6, 182, 212, 0.8); }
+    }
+  </style>
+</head>
+<body class="bg-darkBg text-slate-100 font-sans transition-colors duration-300 dark">
+  
+  <!-- Canvas for dynamic background lines/particles -->
+  <canvas id="neural-canvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-40"></canvas>
+  <!-- Confetti canvas -->
+  <canvas id="confetti-canvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-50"></canvas>
+
+  <!-- Sound Toggle & Audio Elements Context Helper -->
+  <div class="fixed top-4 right-4 z-50 flex items-center gap-3">
+    <!-- Gemini API Settings Button -->
+    <button onclick="toggleApiSettings()" class="glass-panel p-2.5 rounded-full hover:scale-105 transition-all text-neonCyan focus:outline-none flex items-center justify-center" title="API Settings">
+      <svg class="w-5 h-5 animate-spin-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+    </button>
+    <!-- Audio Feedback Button -->
+    <button id="sound-btn" onclick="toggleSound()" class="glass-panel p-2.5 rounded-full hover:scale-105 transition-all text-neonPurple focus:outline-none" title="Toggle Sound Synth">
+      <span id="sound-icon">🔊</span>
+    </button>
+    <!-- Dark/Light Theme Button -->
+    <button onclick="toggleTheme()" class="glass-panel p-2.5 rounded-full hover:scale-105 transition-all text-amber-400 focus:outline-none" title="Toggle Theme">
+      <span id="theme-icon">🌙</span>
+    </button>
+  </div>
+
+  <!-- API Settings Modal -->
+  <div id="api-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[100] hidden items-center justify-center p-4">
+    <div class="glass-panel p-6 rounded-2xl max-w-md w-full relative border border-cyan-500/30">
+      <button onclick="toggleApiSettings()" class="absolute top-4 right-4 text-slate-400 hover:text-white">&times;</button>
+      <h3 class="font-display font-bold text-xl text-cyan-400 mb-2">Connect Live Gemini AI</h3>
+      <p class="text-xs text-slate-400 mb-4">By default, the application runs on a smart offline prompt evaluator. To test your prompts live with Google's premium Gemini models, paste an API key below.</p>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-300 mb-1">Gemini API Key</label>
+          <input type="password" id="api-key-input" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 font-mono text-sm text-slate-200 focus:ring-2 focus:ring-cyan-500 focus:outline-none" placeholder="AIzaSy...">
+        </div>
+        <div class="text-xs text-indigo-300 bg-indigo-950/50 p-2.5 rounded-lg border border-indigo-500/20">
+          🔒 Your key is only stored in memory in your local browser tab and is sent directly to Google's official endpoints.
+        </div>
+        <button onclick="saveApiKey()" class="w-full py-2.5 bg-gradient-to-r from-cyan-500 to-indigo-500 text-slate-900 font-bold rounded-lg hover:from-cyan-400 hover:to-indigo-400 transition-all text-sm uppercase">Save Config</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Grid Wrapper -->
+  <div class="relative min-h-screen flex flex-col z-10">
+
+    <!-- Header / Banner Dashboard -->
+    <header class="glass-panel sticky top-0 z-40 border-b border-white/5 backdrop-blur-md">
+      <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+        <!-- Logo Area -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg font-display tracking-wider shadow-lg shadow-indigo-500/30">
+            P2
+          </div>
+          <div>
+            <h1 class="font-display font-bold text-lg leading-tight tracking-wide bg-gradient-to-r from-cyan-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">AI PROMPT MASTER</h1>
+            <p class="text-xs text-slate-400">Day 2 • Smart Prompt Writing Techniques</p>
+          </div>
+        </div>
+
+        <!-- Real-time Level, XP, Progress Dash -->
+        <div class="flex items-center gap-4 sm:gap-6 flex-wrap">
+          <!-- Level -->
+          <div class="flex items-center gap-2">
+            <span class="text-xs uppercase font-semibold text-slate-400">Level</span>
+            <span id="header-level" class="bg-gradient-to-r from-cyan-500 to-indigo-500 text-slate-950 text-xs font-bold font-display px-2.5 py-1 rounded-full animate-pulse">2</span>
+          </div>
+          <!-- XP Progress -->
+          <div class="flex flex-col min-w-[120px] sm:min-w-[160px]">
+            <div class="flex justify-between text-xs mb-1">
+              <span class="font-semibold text-cyan-400">EXP TRACKER</span>
+              <span id="header-xp-text" class="font-bold text-indigo-300 font-mono">0 / 1000 XP</span>
+            </div>
+            <div class="w-full bg-slate-800/80 h-2.5 rounded-full overflow-hidden border border-white/5">
+              <div id="header-xp-bar" class="bg-gradient-to-r from-cyan-400 via-indigo-500 to-purple-500 h-full w-0 transition-all duration-500"></div>
+            </div>
+          </div>
+          <!-- Completion Rate -->
+          <div class="flex items-center gap-2">
+            <span class="text-xs uppercase font-semibold text-slate-400">Missions Completed</span>
+            <span id="header-completion" class="font-mono text-sm font-bold text-teal-400 bg-teal-950/45 px-2.5 py-1 rounded border border-teal-500/20">0%</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- App Main Body: Sticky Sidebar & Main Content -->
+    <div class="flex-1 max-w-7xl w-full mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      
+      <!-- Sticky Sidebar Navigation & Stats (cols-3) -->
+      <aside class="lg:col-span-3 lg:sticky lg:top-[80px] space-y-6">
+        <!-- Explorer Identity Card -->
+        <div class="glass-panel p-5 rounded-2xl relative overflow-hidden group">
+          <div class="absolute -top-12 -right-12 w-28 h-28 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-full blur-xl group-hover:scale-110 transition-transform"></div>
+          <div class="flex items-center gap-3.5 mb-4">
+            <div class="relative">
+              <div class="w-12 h-12 rounded-full border-2 border-indigo-400 p-0.5 overflow-hidden bg-slate-900">
+                <!-- Retro-futuristic generated avatar using SVG -->
+                <svg viewBox="0 0 100 100" class="w-full h-full text-slate-300"><circle cx="50" cy="45" r="20" fill="currentColor"/><path d="M20 90c0-15 15-25 30-25s30 10 30 25H20z" fill="currentColor"/><circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="8,4"/></svg>
+              </div>
+              <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-darkCard rounded-full"></span>
+            </div>
+            <div>
+              <h4 id="explorer-name" class="font-display font-bold text-slate-100 group-hover:text-cyan-400 transition-colors">AI Explorer (Day 2)</h4>
+              <p class="text-xs text-slate-400 flex items-center gap-1">Status: Active Mission</p>
+            </div>
+          </div>
+
+          <!-- Quick Stats Panel -->
+          <div class="grid grid-cols-2 gap-2 text-center text-xs bg-slate-950/40 p-3 rounded-xl border border-white/5 mb-4">
+            <div>
+              <span class="block text-slate-400">Global Rank</span>
+              <span id="rank-display" class="font-display font-bold text-cyan-400 text-sm">#12,542</span>
+            </div>
+            <div>
+              <span class="block text-slate-400">Total Score</span>
+              <span id="sidebar-total-score" class="font-display font-bold text-purple-400 text-sm">0 XP</span>
+            </div>
+          </div>
+
+          <!-- Unlocked Badges Mini Hub -->
+          <div>
+            <h5 class="text-xs uppercase font-bold tracking-wider text-slate-400 mb-2.5">Your Badges Hub</h5>
+            <div class="flex flex-wrap gap-2.5">
+              <!-- Badge 1 -->
+              <div id="badge-prompt-engineer" class="opacity-30 grayscale transition-all duration-500 scale-90 relative group/badge cursor-pointer" onclick="showBadgeDetails('Prompt Engineer', 'Awarded for initiating Level 2 and mastering basic structures.')">
+                <div class="w-10 h-10 rounded-lg bg-indigo-950 flex items-center justify-center border border-indigo-500/30 text-lg">🏆</div>
+                <div class="absolute bottom-12 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-700 text-[10px] py-1 px-2 rounded opacity-0 group-hover/badge:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">Prompt Engineer</div>
+              </div>
+              <!-- Badge 2 -->
+              <div id="badge-context-master" class="opacity-30 grayscale transition-all duration-500 scale-90 relative group/badge cursor-pointer" onclick="showBadgeDetails('Context Master', 'Awarded for understanding clarity, specific phrasing, and structural sliders.')">
+                <div class="w-10 h-10 rounded-lg bg-teal-950 flex items-center justify-center border border-teal-500/30 text-lg">🎖️</div>
+                <div class="absolute bottom-12 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-700 text-[10px] py-1 px-2 rounded opacity-0 group-hover/badge:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">Context Master</div>
+              </div>
+              <!-- Badge 3 -->
+              <div id="badge-ai-strategist" class="opacity-30 grayscale transition-all duration-500 scale-90 relative group/badge cursor-pointer" onclick="showBadgeDetails('AI Strategist', 'Awarded for mastering prompt techniques including zero-shot and few-shot strategies.')">
+                <div class="w-10 h-10 rounded-lg bg-amber-950 flex items-center justify-center border border-amber-500/30 text-lg">🌟</div>
+                <div class="absolute bottom-12 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-700 text-[10px] py-1 px-2 rounded opacity-0 group-hover/badge:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">AI Strategist</div>
+              </div>
+              <!-- Badge 4 -->
+              <div id="badge-iteration-pro" class="opacity-30 grayscale transition-all duration-500 scale-90 relative group/badge cursor-pointer" onclick="showBadgeDetails('Iteration Pro', 'Awarded for evolutionary refinement of prompts in multiple stages.')">
+                <div class="w-10 h-10 rounded-lg bg-purple-950 flex items-center justify-center border border-purple-500/30 text-lg">⚡</div>
+                <div class="absolute bottom-12 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-700 text-[10px] py-1 px-2 rounded opacity-0 group-hover/badge:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">Iteration Pro</div>
+              </div>
+              <!-- Badge 5 -->
+              <div id="badge-prompt-architect" class="opacity-30 grayscale transition-all duration-500 scale-90 relative group/badge cursor-pointer" onclick="showBadgeDetails('Prompt Architect', 'Awarded for passing the Arena challenges and the Ultimate Prompt Evaluator.')">
+                <div class="w-10 h-10 rounded-lg bg-cyan-950 flex items-center justify-center border border-cyan-500/30 text-lg">⚙️</div>
+                <div class="absolute bottom-12 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-700 text-[10px] py-1 px-2 rounded opacity-0 group-hover/badge:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">Prompt Architect</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sticky Navigation Tracker (Progress Panel) -->
+        <nav class="glass-panel p-5 rounded-2xl">
+          <h4 class="font-display font-bold text-sm text-slate-300 uppercase tracking-wider mb-3">Day 2 Mission Map</h4>
+          <div class="space-y-1">
+            <!-- Navigation Items -->
+            <button onclick="scrollToTopic('landing-section')" id="nav-landing" class="w-full text-left flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-white/5 transition-all text-cyan-400 font-medium">
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Welcome Desk
+            </button>
+            <button onclick="scrollToTopic('opening-recap')" id="nav-recap" class="w-full text-left flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-white/5 transition-all text-slate-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-transparent"></span> Day 1 Recap Quiz
+            </button>
+            <button onclick="scrollToTopic('topic-1')" id="nav-topic1" class="w-full text-left flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-white/5 transition-all text-slate-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-transparent"></span> T1: 4 Core Components
+            </button>
+            <button onclick="scrollToTopic('topic-2')" id="nav-topic2" class="w-full text-left flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-white/5 transition-all text-slate-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-transparent"></span> T2: Clarity & Phrasing
+            </button>
+            <button onclick="scrollToTopic('topic-3')" id="nav-topic3" class="w-full text-left flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-white/5 transition-all text-slate-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-transparent"></span> T3: Prompting Techniques
+            </button>
+            <button onclick="scrollToTopic('topic-4')" id="nav-topic4" class="w-full text-left flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-white/5 transition-all text-slate-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-transparent"></span> T4: Refinement Flow
+            </button>
+            <button onclick="scrollToTopic('topic-5')" id="nav-topic5" class="w-full text-left flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-white/5 transition-all text-slate-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-transparent"></span> T5: Real-World Scenarios
+            </button>
+            <button onclick="scrollToTopic('topic-6')" id="nav-topic6" class="w-full text-left flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-white/5 transition-all text-slate-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-transparent"></span> T6: Prompt Challenge Arena
+            </button>
+            <button onclick="scrollToTopic('final-challenge')" id="nav-final" class="w-full text-left flex items-center gap-3 px-3 py-2 text-sm rounded-lg hover:bg-white/5 transition-all text-slate-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-transparent"></span> Master Evaluation
+            </button>
+          </div>
+        </nav>
+
+        <!-- Simulated Live Leaderboard Widget -->
+        <div class="glass-panel p-5 rounded-2xl">
+          <h4 class="font-display font-bold text-xs uppercase tracking-wider text-slate-400 mb-3 flex items-center justify-between">
+            <span>Global Leaderboard</span>
+            <span class="text-indigo-400 animate-pulse text-[10px]">● Live</span>
+          </h4>
+          <div class="space-y-2.5">
+            <!-- User Rank Indicator -->
+            <div class="flex justify-between items-center bg-indigo-500/10 border border-indigo-500/20 p-2 rounded-lg text-xs">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-indigo-400">#12,542</span>
+                <span class="text-slate-100 font-semibold" id="leaderboard-user-name">You (Explorer)</span>
+              </div>
+              <span id="leaderboard-user-xp" class="font-mono font-bold text-indigo-300">0 XP</span>
+            </div>
+            <!-- Leaderboard items -->
+            <div id="leaderboard-list" class="space-y-1.5 text-xs text-slate-300">
+              <!-- Generated Dynamically, but initialized nicely below -->
+              <div class="flex justify-between p-1.5 hover:bg-white/5 rounded">
+                <span>🏆 1. Aarav S. (BCA)</span>
+                <span class="font-mono text-cyan-400">1,450 XP</span>
+              </div>
+              <div class="flex justify-between p-1.5 hover:bg-white/5 rounded">
+                <span>🥈 2. Ananya K. (BTech)</span>
+                <span class="font-mono text-cyan-400">1,390 XP</span>
+              </div>
+              <div class="flex justify-between p-1.5 hover:bg-white/5 rounded">
+                <span>🥉 3. Rahul Verma (BCS)</span>
+                <span class="font-mono text-cyan-400">1,320 XP</span>
+              </div>
+              <div class="flex justify-between p-1.5 hover:bg-white/5 rounded">
+                <span>⚡ 4. Divya J. (BCom)</span>
+                <span class="font-mono text-cyan-400">1,210 XP</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Learning Content Area (cols-9) -->
+      <main class="lg:col-span-9 space-y-12">
+
+        <!-- LANDING SCREEN -->
+        <section id="landing-section" class="relative glass-panel rounded-3xl p-6 sm:p-10 overflow-hidden border border-cyan-500/15">
+          <!-- Background Glow Elements -->
+          <div class="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-cyan-500/10 to-transparent rounded-full blur-3xl"></div>
+          <div class="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-purple-500/10 to-transparent rounded-full blur-3xl"></div>
+
+          <div class="relative z-10 text-center lg:text-left">
+            <div class="inline-flex items-center gap-2 bg-indigo-950/40 border border-indigo-500/30 text-indigo-300 text-xs font-bold px-3 py-1.5 rounded-full mb-6 uppercase tracking-wider">
+              <span>🚀 DAY 2 INTERMEDIATE MODULE</span>
+            </div>
+            
+            <h1 class="font-display font-extrabold text-3xl sm:text-5xl lg:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-300 to-purple-400 mb-4 leading-tight">
+              Smart Prompt Writing Techniques
+            </h1>
+            <p class="text-base sm:text-lg text-slate-300 max-w-2xl mb-8 leading-relaxed">
+              Welcome back, AI Explorer! In Day 1, we unlocked what generative AI is and built our initial prompts. Today, you'll learn how to write highly clear, strategic prompts using professional structures. Perfect for college students seeking to master AI to study faster, automate tasks, write code, and create content like an expert.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 max-w-3xl text-left">
+              <div class="bg-slate-950/50 p-4 rounded-xl border border-white/5 flex items-center gap-3">
+                <span class="text-2xl">⏳</span>
+                <div>
+                  <span class="block text-slate-400 text-xs">Estimated Time</span>
+                  <span class="font-bold text-sm text-slate-100">2 Hours Self-Paced</span>
+                </div>
+              </div>
+              <div class="bg-slate-950/50 p-4 rounded-xl border border-white/5 flex items-center gap-3">
+                <span class="text-2xl">🔥</span>
+                <div>
+                  <span class="block text-slate-400 text-xs">Difficulty Rank</span>
+                  <span class="font-bold text-sm text-slate-100">Level 2 Intermediate</span>
+                </div>
+              </div>
+              <div class="bg-slate-950/50 p-4 rounded-xl border border-white/5 flex items-center gap-3">
+                <span class="text-2xl">🎓</span>
+                <div>
+                  <span class="block text-slate-400 text-xs">Primary Rewards</span>
+                  <span class="font-bold text-sm text-slate-100">Prompt Master Badges + Cert</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <button onclick="startMission()" class="px-8 py-4 bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-bold font-display rounded-xl shadow-lg shadow-cyan-500/20 transform hover:-translate-y-0.5 transition-all uppercase tracking-wide">
+                Start Mission Level 2
+              </button>
+              <button onclick="scrollToTopic('opening-recap')" class="px-6 py-4 bg-white/5 hover:bg-white/10 text-slate-300 font-semibold rounded-xl border border-white/10 transition-all">
+                Quick Day 1 Recap
+              </button>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- SESSION OPENING: Day 1 Recap & Warm-Up Quiz (0-10 Mins) -->
+        <section id="opening-recap" class="glass-panel p-6 sm:p-8 rounded-3xl relative overflow-hidden hidden transition-all duration-700">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-lg text-xl">⏳</span>
+            <div>
+              <h2 class="font-display font-bold text-2xl text-slate-100">Welcome Back, AI Explorer</h2>
+              <p class="text-sm text-slate-400">Let's check your foundations from Day 1 with a quick recall check.</p>
+            </div>
+          </div>
+
+          <!-- Day 1 Quick Summary Deck -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-slate-950/40 p-4 rounded-xl border border-white/5">
+              <div class="text-cyan-400 font-bold text-sm mb-1">What is AI?</div>
+              <p class="text-xs text-slate-300 leading-relaxed">Technology mimicking human brain capacities like reasoning, learning, and self-correction to solve complex problems.</p>
+            </div>
+            <div class="bg-slate-950/40 p-4 rounded-xl border border-white/5">
+              <div class="text-purple-400 font-bold text-sm mb-1">Generative AI</div>
+              <p class="text-xs text-slate-300 leading-relaxed">A subfield of AI focused on creating brand-new original content (text, graphics, sound, or code) from raw data training patterns.</p>
+            </div>
+            <div class="bg-slate-950/40 p-4 rounded-xl border border-white/5">
+              <div class="text-pink-400 font-bold text-sm mb-1">What is a Prompt?</div>
+              <p class="text-xs text-slate-300 leading-relaxed">The input text instructions, parameters, or questions you provide to guide generative AI to generate an accurate response.</p>
+            </div>
+          </div>
+
+          <!-- Recap Quiz Block -->
+          <div class="bg-slate-950/60 p-5 rounded-2xl border border-white/5">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-sm uppercase tracking-wider font-bold text-indigo-400">Foundations Quiz</h3>
+              <span class="text-xs font-mono bg-white/5 px-2 py-1 rounded text-slate-400" id="quiz-tracker">Question 1/3</span>
+            </div>
+
+            <!-- Quiz Questions Container -->
+            <div id="quiz-question-box" class="min-h-[140px] flex flex-col justify-between">
+              <!-- Loaded Dynamically -->
+            </div>
+
+            <!-- Quiz Progress bar -->
+            <div class="mt-4 pt-4 border-t border-white/5 flex justify-between items-center">
+              <p class="text-xs text-slate-400 italic">Score points to unlock Day 2 badges.</p>
+              <div id="quiz-reward-message" class="text-xs text-emerald-400 font-bold hidden">🎉 Quiz completed! +20 XP Unlocked!</div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- TOPIC 1: Components of an Effective Prompt (10-30 Mins) -->
+        <section id="topic-1" class="glass-panel p-6 sm:p-8 rounded-3xl relative hidden overflow-hidden transition-all duration-700">
+          <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+            <div class="flex items-center gap-3">
+              <span class="p-2.5 bg-cyan-500/10 text-cyan-400 rounded-lg text-xl">💡</span>
+              <div>
+                <h2 class="font-display font-bold text-2xl text-slate-100">Topic 1: Components of an Effective Prompt</h2>
+                <p class="text-sm text-slate-400">Mastering the structural anatomy of an expert prompt</p>
+              </div>
+            </div>
+            <span class="bg-cyan-500/10 text-cyan-400 text-xs px-3 py-1.5 rounded-full border border-cyan-500/20 font-mono">Award: +50 XP</span>
+          </div>
+
+          <p class="text-slate-300 text-sm leading-relaxed mb-6">
+            An advanced prompt is not a random conversational query. Like professional code, it relies on strict logical structures. To get precise, reliable results, you should structure your prompts with <strong class="text-cyan-400">4 key structural elements</strong>:
+          </p>
+
+          <!-- The 4 Components Visualization Block -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <!-- Context -->
+            <div class="p-4 bg-indigo-950/30 rounded-xl border border-indigo-500/20 relative group hover:border-indigo-400 transition-all">
+              <div class="text-indigo-400 text-xs font-bold font-display tracking-widest uppercase mb-1">01 • Context</div>
+              <p class="text-xs text-slate-300">Background scenario, intent, audience context, and constraints. Defines the *environment*.</p>
+            </div>
+            <!-- Task -->
+            <div class="p-4 bg-purple-950/30 rounded-xl border border-purple-500/20 relative group hover:border-purple-400 transition-all">
+              <div class="text-purple-400 text-xs font-bold font-display tracking-widest uppercase mb-1">02 • Task</div>
+              <p class="text-xs text-slate-300">The clear instruction of what you want the AI to analyze, compute, create, or modify.</p>
+            </div>
+            <!-- Role -->
+            <div class="p-4 bg-pink-950/30 rounded-xl border border-pink-500/20 relative group hover:border-pink-400 transition-all">
+              <div class="text-pink-400 text-xs font-bold font-display tracking-widest uppercase mb-1">03 • Role</div>
+              <p class="text-xs text-slate-300">Who the AI is acting as (e.g., Senior Systems Analyst, Language Coach, CTO).</p>
+            </div>
+            <!-- Format -->
+            <div class="p-4 bg-teal-950/30 rounded-xl border border-teal-500/20 relative group hover:border-teal-400 transition-all">
+              <div class="text-teal-400 text-xs font-bold font-display tracking-widest uppercase mb-1">04 • Format</div>
+              <p class="text-xs text-slate-300">How the output must look (e.g., CSV, clean table, JSON structured code, visual list, bullet points).</p>
+            </div>
+          </div>
+
+          <!-- Bad vs Good Comparison Interactive Graphic -->
+          <div class="bg-slate-950/60 p-5 rounded-2xl border border-white/5 mb-8">
+            <h3 class="text-xs uppercase tracking-wider font-bold text-slate-400 mb-4">Prompt Structure Case Study</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="bg-red-950/20 border border-red-500/20 p-4 rounded-xl">
+                <span class="inline-block text-xs font-bold text-red-400 uppercase tracking-widest mb-2 bg-red-950/40 px-2 py-0.5 rounded">❌ Inefficient Prompt</span>
+                <p class="font-mono text-xs text-red-200 mb-2">"Explain Python"</p>
+                <p class="text-slate-400 text-xs">AI has no scope. It produces a generic response, listing history, details too simple, or complex syntax code. Unsuitable for targeted study.</p>
+              </div>
+              <div class="bg-emerald-950/20 border border-emerald-500/20 p-4 rounded-xl">
+                <span class="inline-block text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2 bg-emerald-950/40 px-2 py-0.5 rounded">🚀 Structured Expert Prompt</span>
+                <p class="font-mono text-xs text-emerald-200 mb-2">
+                  "<span class="text-pink-400 font-bold">[Role: You are a coding teacher]</span>. Explain Python basics <span class="text-indigo-400 font-bold">[Context: to a first-year BCA student with no prior coding experience]</span>. <span class="text-purple-400 font-bold">[Task: Break down the concept of variables and loops]</span>. <span class="text-teal-400 font-bold">[Format: Use bullet points, simple real-world analogies, and a snippet of clean code]</span>."
+                </p>
+                <p class="text-slate-400 text-xs">AI focuses precisely on the student's level, structuring the tutorial logically, saving countless wasted chat exchanges.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Prompt Builder Lab -->
+          <div class="bg-slate-900/80 p-5 rounded-2xl border border-cyan-500/20">
+            <h3 class="font-display font-bold text-lg text-cyan-400 mb-1">Practice Lab: Dynamic Prompt Block Builder</h3>
+            <p class="text-xs text-slate-400 mb-4">Select items to construct an optimized prompt and inspect the simulated generated AI output live!</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 text-xs">
+              <!-- Role Select -->
+              <div>
+                <label class="block text-slate-400 mb-1 uppercase font-semibold">1. Choose Role</label>
+                <select id="builder-role" onchange="updateBuilderPrompt()" class="w-full bg-slate-950 border border-slate-700 p-2 rounded focus:ring-1 focus:ring-cyan-500 text-slate-200">
+                  <option value="You are an expert Data Analyst">You are an expert Data Analyst</option>
+                  <option value="You are a strict technical recruiter">You are a strict tech recruiter</option>
+                  <option value="You are a startup founder & pitch mentor">You are a startup founder</option>
+                  <option value="You are an empathetic creative writing coach">You are a creative coach</option>
+                </select>
+              </div>
+              <!-- Context Select -->
+              <div>
+                <label class="block text-slate-400 mb-1 uppercase font-semibold">2. Choose Context</label>
+                <select id="builder-context" onchange="updateBuilderPrompt()" class="w-full bg-slate-950 border border-slate-700 p-2 rounded focus:ring-1 focus:ring-cyan-500 text-slate-200">
+                  <option value="working with non-tech commerce college students">working with non-tech commerce students</option>
+                  <option value="helping a nervous engineering student prep for an interview">prep for high-level interview</option>
+                  <option value="assisting a student competitor entering an incubator competition">mentoring student incubator hackathons</option>
+                  <option value="guiding a freshman college writer struggling with creative writer's block">writing a collegiate fantasy story</option>
+                </select>
+              </div>
+              <!-- Task Select -->
+              <div>
+                <label class="block text-slate-400 mb-1 uppercase font-semibold">3. Choose Task</label>
+                <select id="builder-task" onchange="updateBuilderPrompt()" class="w-full bg-slate-950 border border-slate-700 p-2 rounded focus:ring-1 focus:ring-cyan-500 text-slate-200">
+                  <option value="explain what SQL databases do and why they matter">explain relational databases/SQL</option>
+                  <option value="assess my technical background and output critical practice questions">generate tough technical interview questions</option>
+                  <option value="outline the design layout of a modular finance tracking application">write startup layout documentation</option>
+                  <option value="draft a captivating outline for a short cyber-fiction story">draft science-fiction plot structures</option>
+                </select>
+              </div>
+              <!-- Format Select -->
+              <div>
+                <label class="block text-slate-400 mb-1 uppercase font-semibold">4. Choose Format</label>
+                <select id="builder-format" onchange="updateBuilderPrompt()" class="w-full bg-slate-950 border border-slate-700 p-2 rounded focus:ring-1 focus:ring-cyan-500 text-slate-200">
+                  <option value="Summarize it in a clear 3-column table with column labels.">3-column markdown table</option>
+                  <option value="Present your solution as an actionable checklist of steps.">Actionable Checklist</option>
+                  <option value="Create a clean JSON formatted data object with mock keys.">Clean JSON Data Object</option>
+                  <option value="Draft a structured narrative flow split into Beginning, Middle, and End.">Beginning, Middle, End flow</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Constructed Output Preview -->
+            <div class="mb-4">
+              <span class="block text-xs uppercase font-semibold text-slate-400 mb-1">Generated Compound Prompt Preview</span>
+              <div id="builder-prompt-result" class="bg-slate-950 p-3 rounded-lg border border-indigo-500/20 font-mono text-xs text-indigo-200 leading-relaxed min-h-[50px]">
+                Loading custom prompt formula...
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <button onclick="runBuilderSimulation()" class="flex-1 py-2.5 bg-cyan-500 text-slate-950 font-bold font-display rounded-lg text-xs hover:bg-cyan-400 transition-all uppercase tracking-wide">
+                Run Simulation / Generate Response
+              </button>
+            </div>
+
+            <!-- Simulated Output Panel -->
+            <div id="builder-simulation-wrapper" class="mt-4 hidden animate-fade-in">
+              <span class="block text-xs uppercase font-semibold text-slate-400 mb-1 flex justify-between">
+                <span>Simulated AI Response (Generated in real-time)</span>
+                <span class="text-xs text-emerald-400">⚡ Perfect Structure Applied</span>
+              </span>
+              <div id="builder-simulation-output" class="bg-slate-950 p-4 rounded-lg border border-emerald-500/20 font-mono text-xs text-slate-300 overflow-auto max-h-60 leading-relaxed">
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Challenge 1 Block -->
+          <div class="mt-6 bg-slate-950/40 p-4 rounded-xl border border-white/5">
+            <h3 class="font-display font-semibold text-sm text-cyan-400 mb-1">⚡ Quick Fix Challenge</h3>
+            <p class="text-xs text-slate-400 mb-3">Which core block is missing from this prompt? "<em>You are a senior system administrator. Present a comparison of Windows Server vs Linux as a 2-column table.</em>"</p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <button onclick="checkQuickFix('Task')" class="bg-slate-900 hover:bg-white/5 border border-slate-700 text-xs py-2 rounded text-slate-300">Missing Task</button>
+              <button onclick="checkQuickFix('Context')" class="bg-slate-900 hover:bg-white/5 border border-slate-700 text-xs py-2 rounded text-slate-300">Missing Context</button>
+              <button onclick="checkQuickFix('Role')" class="bg-slate-900 hover:bg-white/5 border border-slate-700 text-xs py-2 rounded text-slate-300">Missing Role</button>
+              <button onclick="checkQuickFix('Format')" class="bg-slate-900 hover:bg-white/5 border border-slate-700 text-xs py-2 rounded text-slate-300">Missing Format</button>
+            </div>
+            <div id="quick-fix-feedback" class="mt-2 text-xs font-semibold hidden"></div>
+          </div>
+        </section>
+
+
+        <!-- TOPIC 2: Writing Clear & Specific Prompts (30-45 Mins) -->
+        <section id="topic-2" class="glass-panel p-6 sm:p-8 rounded-3xl relative hidden overflow-hidden transition-all duration-700">
+          <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+            <div class="flex items-center gap-3">
+              <span class="p-2.5 bg-teal-500/10 text-teal-400 rounded-lg text-xl">🎯</span>
+              <div>
+                <h2 class="font-display font-bold text-2xl text-slate-100">Topic 2: Writing Clear and Specific Prompts</h2>
+                <p class="text-sm text-slate-400">Eliminating ambiguity and crafting specific outputs</p>
+              </div>
+            </div>
+            <span class="bg-teal-500/10 text-teal-400 text-xs px-3 py-1.5 rounded-full border border-teal-500/20 font-mono">Unlock Badge: Context Master</span>
+          </div>
+
+          <p class="text-slate-300 text-sm leading-relaxed mb-6">
+            In AI prompting, <span class="text-teal-400 font-bold">"Clarity = Power"</span>. If you write vague, open-ended prompts, the Large Language Model makes generic assumptions. To guide the model properly, you must use rich, explicit phrasing. Let's see how refining clarity transforms typical study and research outcomes.
+          </p>
+
+          <!-- Interactive Slider Comparison -->
+          <div class="bg-slate-950/60 p-5 rounded-2xl border border-white/5 mb-6">
+            <h3 class="font-display font-bold text-sm text-teal-300 mb-2">Clarity & Specificity Optimizer</h3>
+            <p class="text-xs text-slate-400 mb-4">Drag the slider below to upgrade prompt quality and compare how the AI output clarity changes dynamically!</p>
+            
+            <div class="px-4 py-3 bg-slate-900 rounded-xl mb-4">
+              <!-- Slider Input -->
+              <input type="range" id="slider-quality" min="1" max="3" value="1" oninput="updateClaritySlider(this.value)" class="w-full accent-teal-400 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+              <div class="flex justify-between text-[10px] uppercase font-bold text-slate-400 mt-2">
+                <span class="text-red-400">Level 1: Vague</span>
+                <span class="text-indigo-400">Level 2: Structured</span>
+                <span class="text-teal-400">Level 3: Professional</span>
+              </div>
+            </div>
+
+            <!-- Dynamic Comparison Window -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <span class="block text-xs uppercase font-bold text-slate-400 mb-1">Your Inputted Prompt</span>
+                <div id="slider-prompt-box" class="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-xs text-slate-300 min-h-[60px]">
+                  "Tell me about marketing"
+                </div>
+              </div>
+              <div>
+                <span class="block text-xs uppercase font-bold text-slate-400 mb-1">Simulated Output Outcome</span>
+                <div id="slider-output-box" class="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-xs text-slate-400 min-h-[140px] leading-relaxed">
+                  (Drag the slider to preview the output evolution)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity: Students Improve 3 Poor Prompts -->
+          <div class="bg-slate-900/80 p-5 rounded-2xl border border-teal-500/20">
+            <h3 class="font-display font-bold text-lg text-teal-400 mb-1">Clarity Arena Challenge</h3>
+            <p class="text-xs text-slate-400 mb-4">Below are 3 highly inefficient prompts commonly typed by college students. Re-write them in a structured, detailed format to increase their quality score!</p>
+
+            <div class="space-y-4">
+              <!-- Challenge 1 -->
+              <div class="bg-slate-950/60 p-4 rounded-xl border border-white/5 space-y-2">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-semibold bg-red-950/40 text-red-400 px-2.5 py-0.5 rounded">Vague Prompt 1</span>
+                  <span class="text-xs text-slate-400 font-mono">"Tell me how a compiler works"</span>
+                </div>
+                <p class="text-xs text-slate-300">Goal: Create an optimized version acting as a computer science teacher, writing for an engineering fresher, using a workflow analogy, in bulleted phases.</p>
+                <textarea id="improve-prompt-1" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs font-mono text-slate-200 focus:ring-1 focus:ring-teal-400" placeholder="Type your improved structured version here..."></textarea>
+                <button onclick="evaluateImprovedPrompt(1)" class="px-4 py-1.5 bg-teal-500 text-slate-950 text-xs font-bold rounded hover:bg-teal-400 transition-all uppercase">Verify Quality</button>
+                <div id="improve-feedback-1" class="text-xs p-2 rounded hidden bg-slate-900"></div>
+              </div>
+
+              <!-- Challenge 2 -->
+              <div class="bg-slate-950/60 p-4 rounded-xl border border-white/5 space-y-2">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-semibold bg-red-950/40 text-red-400 px-2.5 py-0.5 rounded">Vague Prompt 2</span>
+                  <span class="text-xs text-slate-400 font-mono">"Help me write an business proposal email"</span>
+                </div>
+                <p class="text-xs text-slate-300">Goal: Design a detailed prompt acting as a business analyst pitch mentor, writing to an angel investor for a logistics app startup, requesting a meeting.</p>
+                <textarea id="improve-prompt-2" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs font-mono text-slate-200 focus:ring-1 focus:ring-teal-400" placeholder="Type your improved structured version here..."></textarea>
+                <button onclick="evaluateImprovedPrompt(2)" class="px-4 py-1.5 bg-teal-500 text-slate-950 text-xs font-bold rounded hover:bg-teal-400 transition-all uppercase">Verify Quality</button>
+                <div id="improve-feedback-2" class="text-xs p-2 rounded hidden bg-slate-900"></div>
+              </div>
+
+              <!-- Challenge 3 -->
+              <div class="bg-slate-950/60 p-4 rounded-xl border border-white/5 space-y-2">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-semibold bg-red-950/40 text-red-400 px-2.5 py-0.5 rounded">Vague Prompt 3</span>
+                  <span class="text-xs text-slate-400 font-mono">"Explain machine learning vs deep learning with code"</span>
+                </div>
+                <p class="text-xs text-slate-300">Goal: Design a prompt acting as an AI Consultant, comparing both technologies using a practical tabular breakdown and simple Python syntax examples.</p>
+                <textarea id="improve-prompt-3" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs font-mono text-slate-200 focus:ring-1 focus:ring-teal-400" placeholder="Type your improved structured version here..."></textarea>
+                <button onclick="evaluateImprovedPrompt(3)" class="px-4 py-1.5 bg-teal-500 text-slate-950 text-xs font-bold rounded hover:bg-teal-400 transition-all uppercase">Verify Quality</button>
+                <div id="improve-feedback-3" class="text-xs p-2 rounded hidden bg-slate-900"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- TOPIC 3: Prompting Techniques (45-70 Mins) -->
+        <section id="topic-3" class="glass-panel p-6 sm:p-8 rounded-3xl relative hidden overflow-hidden transition-all duration-700">
+          <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+            <div class="flex items-center gap-3">
+              <span class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-lg text-xl">🧠</span>
+              <div>
+                <h2 class="font-display font-bold text-2xl text-slate-100">Topic 3: Prompting Techniques</h2>
+                <p class="text-sm text-slate-400">Zero-Shot, Few-Shot, and Role-Based frameworks</p>
+              </div>
+            </div>
+            <span class="bg-indigo-500/10 text-indigo-400 text-xs px-3 py-1.5 rounded-full border border-indigo-500/20 font-mono">Unlock Badge: AI Strategist</span>
+          </div>
+
+          <p class="text-slate-300 text-sm leading-relaxed mb-6">
+            Depending on your task complexity, your strategy should shift. There are three primary paradigms used by professional prompt developers:
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-slate-950/40 p-4 rounded-xl border border-white/5 text-xs">
+              <span class="text-indigo-400 font-bold uppercase block mb-1">1. Zero-Shot</span>
+              <p class="text-slate-300 mb-2">Asking the AI a direct instruction with zero supporting examples. Excellent for quick, simple reasoning.</p>
+              <div class="bg-slate-900 p-2 rounded font-mono text-slate-400">"Convert this data block from CSV to JSON: [Data...]"</div>
+            </div>
+            <div class="bg-slate-950/40 p-4 rounded-xl border border-white/5 text-xs">
+              <span class="text-purple-400 font-bold uppercase block mb-1">2. Few-Shot</span>
+              <p class="text-slate-300 mb-2">Providing 1 to 3 mock input-output examples before the final request. Critical for style, tone, and specific custom coding layouts.</p>
+              <div class="bg-slate-900 p-2 rounded font-mono text-slate-400">"Format this. Ex1: Text -> [Output]. Ex2: Text -> [Output]. Now format: [Data]"</div>
+            </div>
+            <div class="bg-slate-950/40 p-4 rounded-xl border border-white/5 text-xs">
+              <span class="text-pink-400 font-bold uppercase block mb-1">3. Role-Based</span>
+              <p class="text-slate-300 mb-2">Instructing the AI to adopt a precise cognitive perspective or domain expert role before executing instructions.</p>
+              <div class="bg-slate-900 p-2 rounded font-mono text-slate-400">"You are an experienced QA Automation Engineer. Write testing suites for..."</div>
+            </div>
+          </div>
+
+          <!-- Side-by-Side Prompting Interactive Comparison Panel -->
+          <div class="bg-slate-900/80 p-5 rounded-2xl border border-indigo-500/20 mb-6">
+            <h3 class="font-display font-bold text-lg text-cyan-400 mb-1">Comparative Method Panel</h3>
+            <p class="text-xs text-slate-400 mb-4">Choose a student task below to see side-by-side comparisons of the Prompt and the Output across all three prompt techniques.</p>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4 text-xs">
+              <button onclick="switchComparisonTask('classification')" class="bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 py-2 px-3 rounded hover:bg-indigo-500/20 active-task-btn">Sentiment Classifier</button>
+              <button onclick="switchComparisonTask('sql')" class="bg-slate-950 border border-slate-800 text-slate-400 py-2 px-3 rounded hover:bg-white/5">Generate SQL Queries</button>
+              <button onclick="switchComparisonTask('resume')" class="bg-slate-950 border border-slate-800 text-slate-400 py-2 px-3 rounded hover:bg-white/5">Write Resume Summary</button>
+              <button onclick="switchComparisonTask('debug')" class="bg-slate-950 border border-slate-800 text-slate-400 py-2 px-3 rounded hover:bg-white/5">Debug Broken Code</button>
+            </div>
+
+            <!-- Side-by-Side Tab System -->
+            <div class="flex border-b border-slate-800 mb-3 text-xs">
+              <button onclick="switchComparisonTab('zero')" id="btn-comp-zero" class="px-4 py-2 text-cyan-400 border-b-2 border-cyan-400 font-semibold focus:outline-none">Zero-Shot Mode</button>
+              <button onclick="switchComparisonTab('few')" id="btn-comp-few" class="px-4 py-2 text-slate-400 font-semibold focus:outline-none">Few-Shot Mode</button>
+              <button onclick="switchComparisonTab('role')" id="btn-comp-role" class="px-4 py-2 text-slate-400 font-semibold focus:outline-none">Role-Based Mode</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <span class="block text-xs uppercase font-bold text-slate-400 mb-1">Constructed Prompt Structure</span>
+                <div id="compare-prompt-box" class="bg-slate-950 p-4 rounded-xl border border-white/5 font-mono text-xs text-slate-300 min-h-[140px] whitespace-pre-line">
+                  Loading comparative prompt layout...
+                </div>
+              </div>
+              <div>
+                <span class="block text-xs uppercase font-bold text-slate-400 mb-1">Simulated Output Structure</span>
+                <div id="compare-output-box" class="bg-slate-950 p-4 rounded-xl border border-white/5 font-mono text-xs text-slate-300 min-h-[140px] whitespace-pre-line">
+                  Loading comparative simulated response...
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Prediction Game -->
+          <div class="bg-slate-950/40 p-4 rounded-xl border border-white/5">
+            <h3 class="font-display font-semibold text-sm text-cyan-400 mb-1">🔮 Strategy Predictor Game</h3>
+            <p class="text-xs text-slate-400 mb-3">Which prompting technique is best suited if you want an AI to write code exactly matching your company's custom internal variable-naming conventions and indentation pattern?</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <button onclick="guessPrediction('zero')" class="bg-slate-900 hover:bg-white/5 border border-slate-700 text-xs py-2 rounded text-slate-300">Zero-Shot Prompting</button>
+              <button onclick="guessPrediction('few')" class="bg-slate-900 hover:bg-white/5 border border-slate-700 text-xs py-2 rounded text-slate-300">Few-Shot Prompting</button>
+              <button onclick="guessPrediction('role')" class="bg-slate-900 hover:bg-white/5 border border-slate-700 text-xs py-2 rounded text-slate-300">Role-Based Prompting</button>
+            </div>
+            <div id="prediction-feedback" class="mt-2 text-xs font-semibold hidden"></div>
+          </div>
+        </section>
+
+
+        <!-- TOPIC 4: Prompt Refinement & Iteration (70-90 Mins) -->
+        <section id="topic-4" class="glass-panel p-6 sm:p-8 rounded-3xl relative hidden overflow-hidden transition-all duration-700">
+          <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+            <div class="flex items-center gap-3">
+              <span class="p-2.5 bg-purple-500/10 text-purple-400 rounded-lg text-xl">⚡</span>
+              <div>
+                <h2 class="font-display font-bold text-2xl text-slate-100">Topic 4: Prompt Refinement & Iteration</h2>
+                <p class="text-sm text-slate-400">"Great prompts are not written once — they are improved."</p>
+              </div>
+            </div>
+            <span class="bg-purple-500/10 text-purple-400 text-xs px-3 py-1.5 rounded-full border border-purple-500/20 font-mono">Unlock Badge: Iteration Pro</span>
+          </div>
+
+          <p class="text-slate-300 text-sm leading-relaxed mb-6">
+            Rarely does your first prompt yield absolute perfection. Prompt design is an iterative conversational science. You starts with a core concept, analyze the flaws in the AI's output, and build specific constraints recursively. Let's study how a basic student prompt evolves into a masterwork.
+          </p>
+
+          <!-- The Evolutionary Flow Steps Map -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 text-center relative">
+            <div class="bg-slate-950/40 p-3 rounded-xl border border-red-500/25 relative">
+              <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-red-950 text-red-400 border border-red-500/40 px-2 py-0.5 rounded text-[9px] uppercase font-bold font-mono">Stage 1</span>
+              <div class="text-xs font-bold text-slate-200 mt-2">Basic Prompt</div>
+              <p class="text-[10px] text-slate-400 mt-1">"Write notes on Database Management Systems (DBMS)."</p>
+            </div>
+            <div class="bg-slate-950/40 p-3 rounded-xl border border-orange-500/25 relative">
+              <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-950 text-orange-400 border border-orange-500/40 px-2 py-0.5 rounded text-[9px] uppercase font-bold font-mono">Stage 2</span>
+              <div class="text-xs font-bold text-slate-200 mt-2">Add Context/Audience</div>
+              <p class="text-[10px] text-slate-400 mt-1">"...explain for a BCA freshman studying for their final college term exam."</p>
+            </div>
+            <div class="bg-slate-950/40 p-3 rounded-xl border border-yellow-500/25 relative">
+              <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-950 text-yellow-400 border border-yellow-500/40 px-2 py-0.5 rounded text-[9px] uppercase font-bold font-mono">Stage 3</span>
+              <div class="text-xs font-bold text-slate-200 mt-2">Define Format & Depth</div>
+              <p class="text-[10px] text-slate-400 mt-1">"...structured as clear revision bullet notes with a key database schema visualization syntax."</p>
+            </div>
+            <div class="bg-slate-950/40 p-3 rounded-xl border border-emerald-500/25 relative">
+              <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-950 text-emerald-400 border border-emerald-500/40 px-2 py-0.5 rounded text-[9px] uppercase font-bold font-mono">Stage 4</span>
+              <div class="text-xs font-bold text-slate-200 mt-2">Expert Constraints</div>
+              <p class="text-[10px] text-slate-400 mt-1">"...include real-world examples from Netflix's user storage database vs SQL models."</p>
+            </div>
+          </div>
+
+          <!-- Evolutionary Live Demo Visualization Box -->
+          <div class="bg-slate-900/80 p-5 rounded-2xl border border-purple-500/20">
+            <h3 class="font-display font-bold text-lg text-cyan-400 mb-1">Evolutionary Refinement Simulator</h3>
+            <p class="text-xs text-slate-400 mb-4">Click "Upgrade Step" to watch the prompt's structural components build up layer-by-layer and inspect the corresponding jump in output elegance.</p>
+
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <span class="text-xs text-slate-400">Current Evolution Level:</span>
+                <span id="evolve-level-text" class="text-sm font-bold text-purple-400 uppercase font-display block">1. Basic Draft</span>
+              </div>
+              <button onclick="progressEvolution()" class="bg-purple-500 text-slate-950 px-4 py-2 rounded-lg font-bold font-display text-xs hover:bg-purple-400 transition-all uppercase">Upgrade Step ⚡</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="space-y-2">
+                <span class="block text-xs uppercase font-semibold text-slate-400">Prompt Syntax State</span>
+                <div id="evolve-prompt-box" class="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-xs text-purple-200 min-h-[80px]">
+                  "Write notes on DBMS"
+                </div>
+              </div>
+              <div class="space-y-2">
+                <span class="block text-xs uppercase font-semibold text-slate-400">Simulated Outlined Notes Preview</span>
+                <div id="evolve-output-box" class="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-xs text-slate-400 min-h-[160px] max-h-60 overflow-y-auto leading-relaxed">
+                  DBMS is software that manages databases. It allows users to store, retrieve, and update data dynamically...
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Refinement Challenge Tracker -->
+          <div class="mt-6 bg-slate-950/40 p-5 rounded-xl border border-white/5 space-y-4">
+            <h3 class="font-display font-semibold text-sm text-cyan-400">💪 The 3-Step Guided Refinement Mission</h3>
+            <p class="text-xs text-slate-400">Your task: Let's iteratively refine the bad prompt: <span class="font-mono text-purple-300">"Explain arrays"</span>.</p>
+
+            <div id="refinement-wizard" class="space-y-3">
+              <!-- Step 1 input -->
+              <div id="refine-step-1-ui">
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Step 1: Assign a specific professional expert role & target audience to this array tutorial.</label>
+                <input type="text" id="refine-inp-1" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs font-mono text-slate-200" placeholder="e.g. You are a Senior Java Engineer explaining arrays to a BCA student with no logic background...">
+                <button onclick="submitRefineStep(1)" class="mt-2 px-3 py-1 bg-cyan-500 text-slate-950 text-xs font-bold rounded">Lock Step 1</button>
+              </div>
+
+              <!-- Step 2 input -->
+              <div id="refine-step-2-ui" class="hidden">
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Step 2: Append a precise, structural formatting schema requirement (e.g. bullet points, tables, code blocks).</label>
+                <input type="text" id="refine-inp-2" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs font-mono text-slate-200" placeholder="e.g. Structure the guide with explicit definitions, bullet points, and mock memory address models...">
+                <button onclick="submitRefineStep(2)" class="mt-2 px-3 py-1 bg-cyan-500 text-slate-950 text-xs font-bold rounded">Lock Step 2</button>
+              </div>
+
+              <!-- Step 3 input -->
+              <div id="refine-step-3-ui" class="hidden">
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Step 3: Define explicit constraints and real-world examples to finalize the prompt architecture.</label>
+                <input type="text" id="refine-inp-3" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs font-mono text-slate-200" placeholder="e.g. Use a real-world analog like row of lockers, and show a practical Javascript syntax arrays snippet...">
+                <button onclick="submitRefineStep(3)" class="mt-2 px-3 py-1 bg-cyan-500 text-slate-950 text-xs font-bold rounded">Lock Final Prompt</button>
+              </div>
+
+              <div id="refinement-summary-ui" class="hidden bg-emerald-950/20 p-3 rounded-lg border border-emerald-500/25">
+                <span class="block text-xs font-bold text-emerald-400 mb-1">🎉 Iterative Prompt Finalized!</span>
+                <p id="final-refine-prompt" class="font-mono text-xs text-slate-300 mb-2"></p>
+                <p class="text-slate-400 text-[11px]">Outstanding progression! You have mastered prompt iteration and secured the Iteration Pro badge.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- TOPIC 5: Using Prompts for Real Tasks (90-110 Mins) -->
+        <section id="topic-5" class="glass-panel p-6 sm:p-8 rounded-3xl relative hidden overflow-hidden transition-all duration-700">
+          <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+            <div class="flex items-center gap-3">
+              <span class="p-2.5 bg-cyan-500/10 text-cyan-400 rounded-lg text-xl">🚀</span>
+              <div>
+                <h2 class="font-display font-bold text-2xl text-slate-100">Topic 5: Using Prompts for Real Tasks</h2>
+                <p class="text-sm text-slate-400">Applying professional prompt templates across four crucial career domains</p>
+              </div>
+            </div>
+            <span class="bg-cyan-500/10 text-cyan-400 text-xs px-3 py-1.5 rounded-full border border-cyan-500/20 font-mono">Real-world Lab</span>
+          </div>
+
+          <p class="text-slate-300 text-sm leading-relaxed mb-6">
+            To integrate generative AI tools seamlessly into your student and professional career workflows, let's explore structured templates optimized across <span class="text-cyan-400 font-bold">four major functional domains</span>:
+          </p>
+
+          <!-- Domain Interactive Deck cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <!-- Card 1: Learning -->
+            <div onclick="switchDomainCard('learning')" class="bg-slate-950/50 p-4 rounded-xl border border-slate-800 cursor-pointer hover:border-cyan-500/40 transition-all card-domain active-domain-card" id="card-dom-learning">
+              <span class="text-2xl block mb-2">📚</span>
+              <h3 class="font-bold text-sm text-slate-200">1. Learning & Summaries</h3>
+              <p class="text-[11px] text-slate-400 mt-1">Syllabus breakdown, study notes, dynamic tutorials, and analogical conceptual modeling.</p>
+            </div>
+            <!-- Card 2: Research -->
+            <div onclick="switchDomainCard('research')" class="bg-slate-950/50 p-4 rounded-xl border border-slate-800 cursor-pointer hover:border-indigo-500/40 transition-all card-domain" id="card-dom-research">
+              <span class="text-2xl block mb-2">🔬</span>
+              <h3 class="font-bold text-sm text-slate-200">2. Research & Analysis</h3>
+              <p class="text-[11px] text-slate-400 mt-1">Structured comparisons, thesis analysis outlines, and data modeling overviews.</p>
+            </div>
+            <!-- Card 3: Coding -->
+            <div onclick="switchDomainCard('coding')" class="bg-slate-950/50 p-4 rounded-xl border border-slate-800 cursor-pointer hover:border-purple-500/40 transition-all card-domain" id="card-dom-coding">
+              <span class="text-2xl block mb-2">💻</span>
+              <h3 class="font-bold text-sm text-slate-200">3. Practical Coding</h3>
+              <p class="text-[11px] text-slate-400 mt-1">Script debugging, unit writing logic, and explanations of complex programming functions.</p>
+            </div>
+            <!-- Card 4: Content -->
+            <div onclick="switchDomainCard('content')" class="bg-slate-950/50 p-4 rounded-xl border border-slate-800 cursor-pointer hover:border-pink-500/40 transition-all card-domain" id="card-dom-content">
+              <span class="text-2xl block mb-2">✍️</span>
+              <h3 class="font-bold text-sm text-slate-200">4. Content Creation</h3>
+              <p class="text-[11px] text-slate-400 mt-1">Pitch proposals, corporate letter drafts, short scripts, and copy frameworks.</p>
+            </div>
+          </div>
+
+          <!-- Dynamic Template Panel -->
+          <div class="bg-slate-900/80 p-5 rounded-2xl border border-cyan-500/20 mb-6">
+            <h3 id="domain-title" class="font-display font-bold text-base text-cyan-400 mb-1">Learning & Concept Study Template</h3>
+            <p id="domain-desc" class="text-xs text-slate-400 mb-3">Excellent for turning complex technical jargon into structured, easy-to-revise notes.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <span class="block text-xs font-semibold text-slate-400 mb-1">High-Performing Template Structure</span>
+                <div id="domain-template-box" class="bg-slate-950 p-3.5 rounded-lg border border-slate-800 font-mono text-xs text-slate-300 min-h-[140px] whitespace-pre-line leading-relaxed">
+                  (Loading...)
+                </div>
+              </div>
+              <div>
+                <span class="block text-xs font-semibold text-slate-400 mb-1">Practical Use-Case Output Preview</span>
+                <div id="domain-output-box" class="bg-slate-950 p-3.5 rounded-lg border border-slate-800 font-mono text-xs text-slate-400 min-h-[140px] max-h-[300px] overflow-y-auto whitespace-pre-line leading-relaxed">
+                  (Loading...)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Practice Lab Interface: Choose task, evaluate live -->
+          <div class="bg-slate-950/60 p-5 rounded-2xl border border-white/5">
+            <h3 class="font-display font-bold text-sm text-cyan-300 mb-1">🛠️ Multi-Task Practice Laboratory</h3>
+            <p class="text-xs text-slate-400 mb-4">Select a task prompt category below, customize the arguments, and run the validator to score your custom input prompt!</p>
+
+            <div class="flex gap-2 flex-wrap mb-4 text-xs">
+              <button onclick="setLabTask('notes')" class="bg-slate-900 border border-slate-700 py-1.5 px-3 rounded text-slate-200 focus:outline-none" id="btn-lab-notes">Syllabus Explainer</button>
+              <button onclick="setLabTask('code')" class="bg-slate-900 border border-slate-700 py-1.5 px-3 rounded text-slate-200 focus:outline-none" id="btn-lab-code">Algorithm Explainer</button>
+              <button onclick="setLabTask('research')" class="bg-slate-900 border border-slate-700 py-1.5 px-3 rounded text-slate-200 focus:outline-none" id="btn-lab-research">Structured Comparison</button>
+              <button onclick="setLabTask('content')" class="bg-slate-900 border border-slate-700 py-1.5 px-3 rounded text-slate-200 focus:outline-none" id="btn-lab-content">Cold Email Writer</button>
+            </div>
+
+            <!-- Custom Input Box -->
+            <div class="space-y-3">
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">Interactive Prompt Workstation</label>
+                <textarea id="lab-prompt-input" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 font-mono text-xs text-slate-200 focus:ring-1 focus:ring-cyan-500 focus:outline-none" placeholder="Tailor your template prompt..."></textarea>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <button onclick="evaluateLabPrompt()" class="flex-1 py-2.5 bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-bold font-display rounded-lg text-xs uppercase tracking-wider">
+                  Test and Evaluate Prompt
+                </button>
+              </div>
+
+              <!-- Lab Evaluation Response Box -->
+              <div id="lab-eval-wrapper" class="hidden bg-slate-900 p-4 rounded-lg border border-slate-800 space-y-3">
+                <div class="flex justify-between items-center flex-wrap gap-2 border-b border-slate-800 pb-2">
+                  <span class="text-xs font-bold text-cyan-400 font-display">Prompt Scoring Dashboard</span>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-400">Score:</span>
+                    <span id="lab-score" class="font-mono font-bold text-sm text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-500/20">0/100</span>
+                  </div>
+                </div>
+                
+                <p class="text-xs text-slate-400 uppercase font-semibold">Diagnostic Analysis Feedback:</p>
+                <div id="lab-feedback-text" class="text-xs text-slate-300 leading-relaxed font-mono">
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- TOPIC 6: Practical Prompt Challenges (110-120 Mins) -->
+        <section id="topic-6" class="glass-panel p-6 sm:p-8 rounded-3xl relative hidden overflow-hidden transition-all duration-700">
+          <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+            <div class="flex items-center gap-3">
+              <span class="p-2.5 bg-pink-500/10 text-pink-400 rounded-lg text-xl">🏆</span>
+              <div>
+                <h2 class="font-display font-bold text-2xl text-slate-100">Topic 6: Practical Prompt Challenges</h2>
+                <p class="text-sm text-slate-400">Gamified Prompt Arena - Compete with global collegiate learners</p>
+              </div>
+            </div>
+            <span class="bg-pink-500/10 text-pink-400 text-xs px-3 py-1.5 rounded-full border border-pink-500/20 font-mono">Unlock Badge: Prompt Architect</span>
+          </div>
+
+          <p class="text-slate-300 text-sm leading-relaxed mb-6">
+            Welcome to the <span class="text-pink-400 font-bold">Gamified Challenge Arena</span>! Below are 4 rigorous prompt engineering objectives. Select a task, write a highly structured prompt incorporating all Day 2 concepts (Role, Context, Task, Format), and see if you can beat the leaderboard threshold!
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <!-- Challenge 1 -->
+            <button onclick="selectArenaChallenge(1)" id="btn-arena-1" class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-left cursor-pointer hover:border-pink-500/40 transition-all focus:outline-none">
+              <span class="text-xs uppercase font-bold text-pink-400 block mb-1">Quest 1</span>
+              <h4 class="font-semibold text-xs text-slate-100">Study Guide Prompt</h4>
+              <p class="text-[10px] text-slate-400 mt-1">Build an ultra-structured compiler guide prompt.</p>
+            </button>
+            <!-- Challenge 2 -->
+            <button onclick="selectArenaChallenge(2)" id="btn-arena-2" class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-left cursor-pointer hover:border-pink-500/40 transition-all focus:outline-none">
+              <span class="text-xs uppercase font-bold text-pink-400 block mb-1">Quest 2</span>
+              <h4 class="font-semibold text-xs text-slate-100">Cheat-sheet Creator</h4>
+              <p class="text-[10px] text-slate-400 mt-1">Design an index tables prompt for networking basics.</p>
+            </button>
+            <!-- Challenge 3 -->
+            <button onclick="selectArenaChallenge(3)" id="btn-arena-3" class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-left cursor-pointer hover:border-pink-500/40 transition-all focus:outline-none">
+              <span class="text-xs uppercase font-bold text-pink-400 block mb-1">Quest 3</span>
+              <h4 class="font-semibold text-xs text-slate-100">Interview Prep Sandbox</h4>
+              <p class="text-[10px] text-slate-400 mt-1">Create a robust behavioral mock interviewer prompt.</p>
+            </button>
+            <!-- Challenge 4 -->
+            <button onclick="selectArenaChallenge(4)" id="btn-arena-4" class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-left cursor-pointer hover:border-pink-500/40 transition-all focus:outline-none">
+              <span class="text-xs uppercase font-bold text-pink-400 block mb-1">Quest 4</span>
+              <h4 class="font-semibold text-xs text-slate-100">Creative Content Draft</h4>
+              <p class="text-[10px] text-slate-400 mt-1">Assemble a scriptwriter prompt for college tech events.</p>
+            </button>
+          </div>
+
+          <!-- Selected Arena Workspace -->
+          <div class="bg-slate-900/80 p-5 rounded-2xl border border-pink-500/25 space-y-4">
+            <h3 id="arena-quest-title" class="font-display font-bold text-base text-pink-400">Quest 1: The Ultimate Study Guide Prompt</h3>
+            <p id="arena-quest-rules" class="text-xs text-slate-400 leading-relaxed bg-slate-950 p-3 rounded-lg border border-slate-800">
+              Objective: Write a prompt instructing the AI to act as a Professor of Computer Science. Have it explain "Assembly Language basics" to a BCS freshman. Output must be a clear 3-step analogy study guide with a mock-code snippet comparing high-level vs assembly.
+            </p>
+
+            <div>
+              <label class="block text-xs uppercase font-semibold text-slate-400 mb-1">Enter Your Arena Contestant Prompt</label>
+              <textarea id="arena-prompt-input" rows="4" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 font-mono text-xs text-slate-200 focus:ring-1 focus:ring-pink-500 focus:outline-none" placeholder="Build your expert challenge submission here..."></textarea>
+            </div>
+
+            <button onclick="submitArenaPrompt()" class="w-full py-2.5 bg-pink-500 hover:bg-pink-400 text-slate-950 font-bold font-display rounded-lg text-xs uppercase tracking-wide">
+              Submit Arena Entry & Compute Rank
+            </button>
+
+            <!-- Results Panel -->
+            <div id="arena-result-wrapper" class="hidden bg-slate-950 p-4 rounded-xl border border-pink-500/30 space-y-3">
+              <div class="flex justify-between items-center border-b border-slate-800 pb-2 flex-wrap gap-2">
+                <span class="text-xs font-bold text-emerald-400">Challenge Score Report</span>
+                <span id="arena-score-badge" class="font-mono font-bold text-xs bg-emerald-950/50 text-emerald-400 px-3 py-1 rounded border border-emerald-500/20">Score: 85/100</span>
+              </div>
+              <p class="text-xs text-slate-300 font-mono leading-relaxed" id="arena-feedback-text"></p>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- FINAL ACTIVITY: MASTER PROMPT CHALLENGE & EVALUATOR -->
+        <section id="final-challenge" class="glass-panel p-6 sm:p-8 rounded-3xl relative hidden overflow-hidden border border-amber-500/15">
+          <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+            <div class="flex items-center gap-3">
+              <span class="p-2.5 bg-amber-500/10 text-amber-400 rounded-lg text-xl">⭐</span>
+              <div>
+                <h2 class="font-display font-bold text-2xl text-slate-100">Day 2 Master Evaluation Desk</h2>
+                <p class="text-sm text-slate-400">Construct one perfect, ultimate prompt to unlock your certificate</p>
+              </div>
+            </div>
+            <span class="bg-amber-500/10 text-amber-400 text-xs px-3 py-1.5 rounded-full border border-amber-500/20 font-mono">Final Check</span>
+          </div>
+
+          <p class="text-slate-300 text-sm leading-relaxed mb-6">
+            To graduate Level 2 and claim your course certificate, you must synthesize everything you've learned. Build one master prompt from scratch. Fill in the structural building blocks in our designer workspace below to render and evaluate your final prompt.
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">01. Define Role</label>
+              <input type="text" id="final-role" class="w-full bg-slate-950 border border-slate-700 p-2 text-xs rounded text-slate-200" placeholder="e.g. You are a Senior DevOps Architect..." onkeyup="syncFinalPrompt()">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">02. Define Context</label>
+              <input type="text" id="final-context" class="w-full bg-slate-950 border border-slate-700 p-2 text-xs rounded text-slate-200" placeholder="e.g. guiding non-technical commerce graduates setting up their first cloud server..." onkeyup="syncFinalPrompt()">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">03. Define Task</label>
+              <input type="text" id="final-task" class="w-full bg-slate-950 border border-slate-700 p-2 text-xs rounded text-slate-200" placeholder="e.g. explain cloud billing and budget limits step-by-step..." onkeyup="syncFinalPrompt()">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">04. Define Format & Constraints</label>
+              <input type="text" id="final-format" class="w-full bg-slate-950 border border-slate-700 p-2 text-xs rounded text-slate-200" placeholder="e.g. presenting it as a list of bullet points and warning callouts..." onkeyup="syncFinalPrompt()">
+            </div>
+          </div>
+
+          <!-- Compiled Render -->
+          <div class="mb-6">
+            <span class="block text-xs font-bold text-slate-400 uppercase mb-1">Synthesized Master Prompt Structure</span>
+            <div id="final-compiled-box" class="bg-slate-950 p-4 rounded-xl border border-indigo-500/30 font-mono text-xs text-indigo-300 leading-relaxed min-h-[60px] whitespace-pre-line">
+              (Fill out the blocks above to assemble your complete prompt automatically...)
+            </div>
+          </div>
+
+          <button onclick="runFinalMasterEvaluation()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 hover:from-amber-400 hover:to-orange-400 font-bold font-display rounded-xl text-xs uppercase tracking-wide">
+            Evaluate Master Prompt & Finalize Grade
+          </button>
+
+          <!-- Master Results Dashboard -->
+          <div id="final-result-card" class="hidden mt-6 bg-slate-950 p-5 rounded-2xl border border-amber-500/40 space-y-4">
+            <div class="flex justify-between items-center flex-wrap gap-2 border-b border-slate-800 pb-3">
+              <span class="text-sm font-bold text-amber-400 font-display">Academic Evaluator Report</span>
+              <span id="final-eval-score" class="font-mono text-xs bg-emerald-950/60 text-emerald-400 px-3 py-1 rounded border border-emerald-500/20">Evaluation Score: 95/100</span>
+            </div>
+            <p id="final-eval-feedback" class="text-xs text-slate-300 font-mono leading-relaxed"></p>
+
+            <!-- Reflection Form -->
+            <div class="pt-4 border-t border-slate-800 space-y-4">
+              <h4 class="font-display font-semibold text-sm text-cyan-400">📝 Final Course Reflection Deck</h4>
+              <p class="text-xs text-slate-400">Complete this quick cognitive mapping exercise to finalize certificate generation.</p>
+
+              <div class="space-y-3">
+                <div>
+                  <label class="block text-[11px] text-slate-300 uppercase font-semibold mb-1">1. Identify 3 critical prompt engineering skills unlocked today:</label>
+                  <input type="text" id="reflect-skills" class="w-full bg-slate-900 border border-slate-700 p-2 text-xs rounded text-slate-200" placeholder="e.g. Context mapping, structural formatting, role adoption">
+                </div>
+                <div>
+                  <label class="block text-[11px] text-slate-300 uppercase font-semibold mb-1">2. State 2 prompting strategies you will apply immediately:</label>
+                  <input type="text" id="reflect-techs" class="w-full bg-slate-900 border border-slate-700 p-2 text-xs rounded text-slate-200" placeholder="e.g. Few-Shot exemplars, clear formatting constraints">
+                </div>
+                <div>
+                  <label class="block text-[11px] text-slate-300 uppercase font-semibold mb-1">3. Describe 1 real-life academic or job usage scenario:</label>
+                  <input type="text" id="reflect-case" class="w-full bg-slate-900 border border-slate-700 p-2 text-xs rounded text-slate-200" placeholder="e.g. Refining code errors in my BCA final project...">
+                </div>
+              </div>
+
+              <button onclick="submitReflection()" class="w-full py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold font-display rounded-lg text-xs uppercase tracking-wide">
+                Lock Reflection & Issue Graduation Certificate
+              </button>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- GRADUATION SCREEN: Certificate & Teaser -->
+        <section id="graduation-section" class="glass-panel p-6 sm:p-10 rounded-3xl relative hidden overflow-hidden text-center border-2 border-cyan-400/20">
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-b from-indigo-500/10 to-transparent rounded-full blur-3xl"></div>
+
+          <div class="relative z-10 space-y-6">
+            <span class="text-5xl block animate-bounce">🎓</span>
+            <h1 class="font-display font-extrabold text-3xl sm:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-300 to-purple-400">
+              Congratulations AI Explorer!
+            </h1>
+            <p class="text-slate-300 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+              You have mastered the foundational core of Smart Prompt Writing Techniques, and graduated Day 2 with flying colors!
+            </p>
+
+            <!-- Metrics Hub -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto text-left">
+              <div class="bg-slate-950/60 p-3 rounded-xl border border-white/5 text-center">
+                <span class="block text-xs text-slate-400">Final Rank</span>
+                <span id="grad-rank" class="font-display font-bold text-sm text-cyan-400">#451</span>
+              </div>
+              <div class="bg-slate-950/60 p-3 rounded-xl border border-white/5 text-center">
+                <span class="block text-xs text-slate-400">Total XP Earned</span>
+                <span id="grad-xp" class="font-display font-bold text-sm text-purple-400">1000 XP</span>
+              </div>
+              <div class="bg-slate-950/60 p-3 rounded-xl border border-white/5 text-center">
+                <span class="block text-xs text-slate-400">Level Reached</span>
+                <span class="font-display font-bold text-sm text-pink-400">Level 2 Completed</span>
+              </div>
+              <div class="bg-slate-950/60 p-3 rounded-xl border border-white/5 text-center">
+                <span class="block text-xs text-slate-400">Badges Unlocked</span>
+                <span class="font-display font-bold text-sm text-emerald-400">5 / 5</span>
+              </div>
+            </div>
+
+            <!-- Printable Interactive Certificate Preview -->
+            <div class="max-w-xl mx-auto bg-slate-950 border border-slate-800 p-6 sm:p-8 rounded-2xl text-left space-y-6 shadow-2xl relative overflow-hidden" id="certificate-card">
+              <div class="absolute -top-16 -right-16 w-36 h-36 bg-cyan-500/5 rounded-full blur-xl"></div>
+              <div class="absolute -bottom-16 -left-16 w-36 h-36 bg-indigo-500/5 rounded-full blur-xl"></div>
+
+              <!-- Cert Header -->
+              <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                <div>
+                  <h3 class="font-display font-bold text-slate-100 text-lg uppercase tracking-wider">CERTIFICATE OF MASTERY</h3>
+                  <p class="text-[10px] text-slate-400">AI PROMPT ENGINEERING WORKSPACE</p>
+                </div>
+                <div class="w-10 h-10 rounded bg-gradient-to-tr from-cyan-500 to-indigo-500 flex items-center justify-center font-bold text-slate-950 text-xs">P2</div>
+              </div>
+
+              <!-- Cert Body -->
+              <div class="space-y-4">
+                <p class="text-xs text-slate-400">This is proudly presented to</p>
+                <h2 id="cert-user-name" class="font-display font-bold text-2xl text-cyan-400 tracking-wide border-b border-slate-800 pb-1">AI Explorer Student</h2>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                  for successfully engineering expert prompt solutions, demonstrating comprehensive knowledge of the <strong>4 Prompt Components (Role, Context, Task, Format)</strong>, scoring advanced iterations, and completing the <strong>Day 2 Smart Prompt Writing Sandbox</strong>.
+                </p>
+              </div>
+
+              <!-- Cert Footer -->
+              <div class="flex justify-between items-center pt-4 border-t border-slate-800 text-[10px]">
+                <div>
+                  <span class="block text-slate-400">Course Administrator</span>
+                  <span class="text-slate-200 font-semibold">Gemini Prompt Master Labs</span>
+                </div>
+                <div class="text-right">
+                  <span class="block text-slate-400">Verification ID</span>
+                  <span class="text-slate-200 font-mono" id="cert-verification-id">G-P2-83920</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex gap-4 justify-center flex-wrap">
+              <button onclick="printCertificate()" class="px-6 py-3 bg-cyan-500 text-slate-950 font-bold font-display rounded-lg text-xs hover:bg-cyan-400 transition-all uppercase">
+                Print Certificate / Save PDF
+              </button>
+            </div>
+
+            <!-- DAY 3 TEASER MODULE -->
+            <div class="max-w-xl mx-auto bg-slate-900/60 border border-slate-800 p-5 rounded-xl text-left space-y-3">
+              <span class="inline-block text-[10px] bg-indigo-950 text-indigo-400 font-bold px-2 py-0.5 rounded border border-indigo-500/20 uppercase tracking-wider">Previewing Next Module</span>
+              <h3 class="font-display font-semibold text-slate-200 text-sm">Next Mission: Advanced AI Tools & Real-World Applications</h3>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                In Day 3, we'll dive deep into actual API connections, advanced parameters (temperature, Top-P, system instructions), chain-of-thought prompting strategies, and multi-agent system workflows!
+              </p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+    </div>
+
+    <!-- Sticky Footer Notification / Assistant Overlay -->
+    <footer class="mt-auto border-t border-slate-800/80 bg-slate-950/80 backdrop-blur-md py-4 text-center text-xs text-slate-400 relative z-10">
+      <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-between items-center gap-4">
+        <p>© 2026 AI Prompt Master Academy. Day 2 Complete Training Module Sandbox.</p>
+        <div class="flex gap-4">
+          <a href="#" class="hover:text-cyan-400 transition-colors">Documentation</a>
+          <a href="#" class="hover:text-cyan-400 transition-colors">Privacy</a>
+          <a href="#" class="hover:text-cyan-400 transition-colors">Academic Credits</a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+
+  <!-- JS Implementation Core -->
+  <script>
+    // Sound synthesis engine using Web Audio API
+    let audioCtx = null;
+    let isSoundEnabled = true;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function toggleSound() {
+      isSoundEnabled = !isSoundEnabled;
+      const btn = document.getElementById('sound-btn');
+      btn.innerHTML = isSoundEnabled ? '🔊' : '🔇';
+      playSfx('click');
+    }
+
+    function playSfx(type) {
+      if (!isSoundEnabled) return;
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+
+        if (type === 'click') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.1);
+          gainNode.gain.setValueAtTime(0.1, now);
+          gainNode.gain.linearRampToValueAtTime(0, now + 0.1);
+          osc.start(now);
+          osc.stop(now + 0.1);
+        } else if (type === 'success') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, now); // C5
+          osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+          osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+          osc.frequency.exponentialRampToValueAtTime(1046.50, now + 0.35); // C6
+          gainNode.gain.setValueAtTime(0.15, now);
+          gainNode.gain.linearRampToValueAtTime(0, now + 0.4);
+          osc.start(now);
+          osc.stop(now + 0.4);
+        } else if (type === 'error') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.linearRampToValueAtTime(110, now + 0.25);
+          gainNode.gain.setValueAtTime(0.15, now);
+          gainNode.gain.linearRampToValueAtTime(0, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'levelup') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(329.63, now); // E4
+          osc.frequency.setValueAtTime(440.00, now + 0.15); // A4
+          osc.frequency.setValueAtTime(554.37, now + 0.3); // C#5
+          osc.frequency.setValueAtTime(659.25, now + 0.45); // E5
+          osc.frequency.exponentialRampToValueAtTime(880.00, now + 0.6); // A5
+          gainNode.gain.setValueAtTime(0.2, now);
+          gainNode.gain.linearRampToValueAtTime(0, now + 0.85);
+          osc.start(now);
+          osc.stop(now + 0.85);
+        }
+      } catch (err) {
+        console.warn('Audio not initialized: ', err);
+      }
+    }
+
+
+    // Neural Connecting Background Particles Canvas
+    const canvas = document.getElementById('neural-canvas');
+    const ctx = canvas.getContext('2d');
+    let points = [];
+    const maxPoints = 50;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Point {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 0.5;
+        this.vy = (Math.random() - 0.5) * 0.5;
+        this.radius = Math.random() * 2 + 1;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = document.body.classList.contains('dark') ? 'rgba(6, 182, 212, 0.4)' : 'rgba(108, 92, 231, 0.4)';
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < maxPoints; i++) {
+      points.push(new Point());
+    }
+
+    function animateNeuralLines() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < points.length; i++) {
+        points[i].update();
+        points[i].draw();
+        for (let j = i + 1; j < points.length; j++) {
+          const dist = Math.hypot(points[i].x - points[j].x, points[i].y - points[j].y);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(points[i].x, points[i].y);
+            ctx.lineTo(points[j].x, points[j].y);
+            ctx.strokeStyle = document.body.classList.contains('dark') ? 
+              `rgba(99, 102, 241, ${0.1 * (1 - dist / 120)})` : 
+              `rgba(108, 92, 231, ${0.1 * (1 - dist / 120)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animateNeuralLines);
+    }
+    animateNeuralLines();
+
+
+    // Confetti System
+    const confCanvas = document.getElementById('confetti-canvas');
+    const confCtx = confCanvas.getContext('2d');
+    let confettiList = [];
+    let isConfettiRunning = false;
+
+    function resizeConfetti() {
+      confCanvas.width = window.innerWidth;
+      confCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeConfetti);
+    resizeConfetti();
+
+    class Confetti {
+      constructor() {
+        this.x = Math.random() * confCanvas.width;
+        this.y = -10 - Math.random() * 20;
+        this.size = Math.random() * 8 + 4;
+        this.color = `hsl(${Math.random() * 360}, 80%, 60%)`;
+        this.vx = (Math.random() - 0.5) * 4;
+        this.vy = Math.random() * 5 + 3;
+        this.rotation = Math.random() * 360;
+        this.rSpeed = Math.random() * 4 - 2;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.rotation += this.rSpeed;
+      }
+      draw() {
+        confCtx.save();
+        confCtx.translate(this.x, this.y);
+        confCtx.rotate((this.rotation * Math.PI) / 180);
+        confCtx.fillStyle = this.color;
+        confCtx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+        confCtx.restore();
+      }
+    }
+
+    function triggerConfetti() {
+      resizeConfetti();
+      confettiList = [];
+      for (let i = 0; i < 100; i++) {
+        confettiList.push(new Confetti());
+      }
+      if (!isConfettiRunning) {
+        isConfettiRunning = true;
+        animateConfetti();
+      }
+    }
+
+    function animateConfetti() {
+      confCtx.clearRect(0, 0, confCanvas.width, confCanvas.height);
+      let alive = false;
+      for (let i = 0; i < confettiList.length; i++) {
+        const c = confettiList[i];
+        c.update();
+        if (c.y < confCanvas.height) {
+          c.draw();
+          alive = true;
+        }
+      }
+      if (alive) {
+        requestAnimationFrame(animateConfetti);
+      } else {
+        isConfettiRunning = false;
+        confCtx.clearRect(0, 0, confCanvas.width, confCanvas.height);
+      }
+    }
+
+
+    // STATE MANAGEMENT
+    let state = {
+      xp: 0,
+      maxXp: 1000,
+      level: 2,
+      progress: 0,
+      badges: {
+        'Prompt Engineer': false,
+        'Context Master': false,
+        'AI Strategist': false,
+        'Iteration Pro': false,
+        'Prompt Architect': false
+      },
+      apiKey: '',
+      quizIdx: 0,
+      comparisonTask: 'classification',
+      comparisonTab: 'zero',
+      evolutionStep: 1,
+      labTask: 'notes',
+      arenaChallenge: 1,
+      finalScore: 0,
+      isGraduated: false,
+      userName: 'AI Explorer'
+    };
+
+    // Initialize User Data
+    window.onload = function() {
+      const savedUser = prompt("Enter your Name for the Live Course Hub & Certificate:", "AI Explorer");
+      if (savedUser && savedUser.trim() !== "") {
+        state.userName = savedUser.trim();
+        document.getElementById('explorer-name').textContent = state.userName + ' (Day 2)';
+        document.getElementById('leaderboard-user-name').textContent = state.userName;
+        document.getElementById('cert-user-name').textContent = state.userName;
+      }
+      updateUI();
+      // Unlock first badge for entering Day 2
+      unlockBadge('Prompt Engineer');
+    };
+
+    function updateUI() {
+      // XP bar calculation
+      const xpPercent = Math.min((state.xp / state.maxXp) * 100, 100);
+      document.getElementById('header-xp-bar').style.width = xpPercent + '%';
+      document.getElementById('header-xp-text').innerText = `${state.xp} / ${state.maxXp} XP`;
+      document.getElementById('sidebar-total-score').innerText = `${state.xp} XP`;
+      document.getElementById('leaderboard-user-xp').innerText = `${state.xp} XP`;
+
+      // Complete percentage
+      let badgeCount = Object.values(state.badges).filter(Boolean).length;
+      let complPercent = Math.round((badgeCount / 5) * 100);
+      document.getElementById('header-completion').innerText = complPercent + '%';
+
+      // Live Leveling
+      if (state.xp >= 1000 && state.level === 2) {
+        state.level = 3;
+        document.getElementById('header-level').innerText = '3';
+        playSfx('levelup');
+        triggerConfetti();
+        showNotification("LEVEL UP!", "Outstanding! You reached Level 3: Prompt Master Scientist.");
+      }
+    }
+
+    function addXP(amount) {
+      state.xp += amount;
+      updateUI();
+      playSfx('success');
+      showNotification("+ " + amount + " XP Unlocked", "Keep completing sandbox activities to claim badges.");
+    }
+
+    function unlockBadge(badgeId) {
+      if (state.badges[badgeId]) return;
+      state.badges[badgeId] = true;
+      const el = document.getElementById('badge-' + badgeId.toLowerCase().replace(' ', '-'));
+      if (el) {
+        el.classList.remove('opacity-30', 'grayscale', 'scale-90');
+        el.classList.add('badge-unlocked');
+      }
+      playSfx('levelup');
+      triggerConfetti();
+      showNotification("🎖️ BADGE UNLOCKED", `You claimed the [${badgeId}] Badge!`);
+      updateUI();
+    }
+
+    function showNotification(title, msg) {
+      // Custom modern alert overlay on screen to prevent iFrame prompt issues
+      const div = document.createElement('div');
+      div.className = "fixed bottom-4 right-4 z-50 glass-panel bg-slate-950/95 text-slate-100 p-4 rounded-xl border border-cyan-500/30 shadow-2xl flex flex-col gap-1 max-w-sm animate-fade-in";
+      div.innerHTML = `
+        <span class="font-display font-bold text-xs uppercase text-cyan-400 tracking-wider">${title}</span>
+        <p class="text-xs text-slate-300">${msg}</p>
+      `;
+      document.body.appendChild(div);
+      setTimeout(() => {
+        div.remove();
+      }, 4000);
+    }
+
+    function toggleTheme() {
+      const body = document.body;
+      const icon = document.getElementById('theme-icon');
+      if (body.classList.contains('dark')) {
+        body.classList.remove('dark');
+        body.classList.add('light-theme');
+        icon.innerText = '☀️';
+      } else {
+        body.classList.remove('light-theme');
+        body.classList.add('dark');
+        icon.innerText = '🌙';
+      }
+      playSfx('click');
+    }
+
+    function showBadgeDetails(title, desc) {
+      showNotification(title, desc);
+    }
+
+    function scrollToTopic(id) {
+      playSfx('click');
+      const target = document.getElementById(id);
+      if (target) {
+        target.classList.remove('hidden');
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+      // Highlight sidebar Nav
+      const navIds = ['nav-landing', 'nav-recap', 'nav-topic1', 'nav-topic2', 'nav-topic3', 'nav-topic4', 'nav-topic5', 'nav-topic6', 'nav-final'];
+      navIds.forEach(navId => {
+        const navBtn = document.getElementById(navId);
+        if (navBtn) {
+          navBtn.classList.remove('text-cyan-400', 'font-medium');
+          navBtn.classList.add('text-slate-400');
+          navBtn.querySelector('span').className = "w-1.5 h-1.5 rounded-full bg-transparent";
+        }
+      });
+      let map = {
+        'landing-section': 'nav-landing',
+        'opening-recap': 'nav-recap',
+        'topic-1': 'nav-topic1',
+        'topic-2': 'nav-topic2',
+        'topic-3': 'nav-topic3',
+        'topic-4': 'nav-topic4',
+        'topic-5': 'nav-topic5',
+        'topic-6': 'nav-topic6',
+        'final-challenge': 'nav-final'
+      };
+      const activeNav = document.getElementById(map[id]);
+      if (activeNav) {
+        activeNav.classList.add('text-cyan-400', 'font-medium');
+        activeNav.querySelector('span').className = "w-1.5 h-1.5 rounded-full bg-cyan-400";
+      }
+    }
+
+    function startMission() {
+      scrollToTopic('opening-recap');
+      initQuiz();
+    }
+
+
+    // API CONFIGURATION SYSTEM (Gemini API Integration)
+    function toggleApiSettings() {
+      const modal = document.getElementById('api-modal');
+      modal.classList.toggle('hidden');
+      modal.classList.toggle('flex');
+    }
+
+    function saveApiKey() {
+      const key = document.getElementById('api-key-input').value.trim();
+      state.apiKey = key;
+      toggleApiSettings();
+      if (key) {
+        showNotification("Gemini API Linked", "The application will now route your evaluations directly to Google's live models!");
+      } else {
+        showNotification("Offline Sandbox Mode", "Switched back to integrated heuristic rules model evaluation.");
+      }
+    }
+
+
+    // TOPIC RECAP QUIZ MODULE (0-10 Mins)
+    const quizQuestions = [
+      {
+        q: "What defines Generative AI?",
+        opts: [
+          "Programs that exclusively capture sensor images",
+          "AI models designed to create brand new content based on patterns of training data",
+          "Rules-based algorithms storing files on system hardware"
+        ],
+        ans: 1,
+        xp: 10
+      },
+      {
+        q: "What is an AI prompt?",
+        opts: [
+          "The hardware chip managing server memory",
+          "The visual coding syntax in high-level databases",
+          "The textual request instructions or parameter conditions inputted to guide generative AI"
+        ],
+        ans: 2,
+        xp: 10
+      },
+      {
+        q: "Which parameter directly dictates response variability/randomness?",
+        opts: [
+          "Temperature Scale",
+          "Task Prompt Context",
+          "System CPU Threads count"
+        ],
+        ans: 0,
+        xp: 10
+      }
+    ];
+
+    function initQuiz() {
+      state.quizIdx = 0;
+      loadQuizQuestion();
+    }
+
+    function loadQuizQuestion() {
+      const box = document.getElementById('quiz-question-box');
+      const tracker = document.getElementById('quiz-tracker');
+      
+      if (state.quizIdx >= quizQuestions.length) {
+        tracker.innerText = "Completed!";
+        box.innerHTML = `
+          <div class="text-center py-4 space-y-3">
+            <span class="text-3xl">🎉</span>
+            <p class="text-sm font-semibold text-emerald-400">Recall Check Complete! All Day 1 fundamentals confirmed.</p>
+            <button onclick="scrollToTopic('topic-1')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-xs font-bold rounded-lg uppercase tracking-wider">Unseal Topic 1 Module</button>
+          </div>
+        `;
+        document.getElementById('quiz-reward-message').classList.remove('hidden');
+        return;
+      }
+
+      const qObj = quizQuestions[state.quizIdx];
+      tracker.innerText = `Question ${state.quizIdx + 1}/${quizQuestions.length}`;
+
+      let optionsHtml = '';
+      qObj.opts.forEach((opt, idx) => {
+        optionsHtml += `
+          <button onclick="checkQuizAnswer(${idx})" class="w-full text-left bg-slate-900 border border-slate-800 p-3 rounded-lg hover:border-cyan-500/40 text-xs transition-all text-slate-300 focus:outline-none flex gap-2">
+            <span class="font-bold text-cyan-400">${idx + 1}.</span>
+            <span>${opt}</span>
+          </button>
+        `;
+      });
+
+      box.innerHTML = `
+        <div class="space-y-3">
+          <p class="text-xs font-semibold text-slate-100">${qObj.q}</p>
+          <div class="space-y-2">${optionsHtml}</div>
+        </div>
+      `;
+    }
+
+    function checkQuizAnswer(selectedIdx) {
+      const qObj = quizQuestions[state.quizIdx];
+      if (selectedIdx === qObj.ans) {
+        addXP(qObj.xp);
+        state.quizIdx++;
+        loadQuizQuestion();
+      } else {
+        playSfx('error');
+        showNotification("Incorrect Option", "Think back to your Day 1 learnings and try again!");
+      }
+    }
+
+
+    // TOPIC 1 DYNAMIC PROMPT BUILDER
+    function updateBuilderPrompt() {
+      const role = document.getElementById('builder-role').value;
+      const context = document.getElementById('builder-context').value;
+      const task = document.getElementById('builder-task').value;
+      const format = document.getElementById('builder-format').value;
+
+      const pStr = `Role: [${role}]. Context: [${context}]. Task: [${task}]. Format/Constraints: [${format}].`;
+      document.getElementById('builder-prompt-result').innerText = pStr;
+    }
+
+    // Call instantly to initialize values
+    setTimeout(updateBuilderPrompt, 50);
+
+    const simulationResponses = {
+      classification: {
+        zero: `Output: Positive. Reason: User likes food.`,
+        few: `Ex 1: "Food was cold" -> NEGATIVE\nEx 2: "Amazing hospitality!" -> POSITIVE\nInput: "I have had much better food, service was slow"\nOutput: NEGATIVE`,
+        role: `Act as Senior Customer Liaison.\nSentiment: Negative (Customer dissatisfaction identified).\nPrimary Pain-Point: Service latency.\nAction Plan:\n1. Issue automatic standard apology voucher.\n2. Forward server logs to kitchen manager.`
+      },
+      sql: {
+        zero: `SELECT * FROM users WHERE active = 1 AND login_count > 10;`,
+        few: `-- Fetch highly active registered students\nSELECT stud_name, class_id FROM schema.students WHERE attendance_pct > 80;\n-- Fetch final list of target active users\nSELECT * FROM user_db.users WHERE active_status = 'TRUE' AND sessions_count > 10;`,
+        role: `/**\n * Role: Senior PostgreSQL Architect\n * Scope: Optimize active registration queries with proper index pointers\n */\nSELECT \n  usr.user_id, \n  usr.email,\n  usr.sessions_count\nFROM prod_users.users AS usr\nWHERE usr.is_active = TRUE \n  AND usr.sessions_count > 10\nLIMIT 100;`
+      },
+      resume: {
+        zero: `I am a skilled Java programmer with BCA certificate. I build database software and look for jobs.`,
+        few: `FORMAT EXAMPLE:\n"Dynamic engineering graduate offering 1yr internship experience utilizing SQL arrays..."\n\nYOUR INPUT:\n"Highly motivated BCA graduate offering strong procedural expertise in Object-Oriented Java..."`,
+        role: `OBJECTIVE PROFILES SUMMARY (Role: Corporate Tech Recruiter Perspective)\n---------------\nExperienced Python Software Engineer and Database Lead offering 2+ years of project leadership in full-stack frameworks. Proven ability to optimize PostgreSQL relational memory leaks, reducing computational queries by 35% across commercial cloud assets.`
+      },
+      debug: {
+        zero: `Syntax Error: Indentation inside for loop is missing on line 4. Fix indentation.`,
+        few: `Ex 1: Unclosed loop bracket -> added closing bracket.\nEx 2: Indentation error in Python -> indented line 4.\nFix for your code: Indent line 3 inside the loop.`,
+        role: `[Senior DevOps QA Engineer Diagnostic Report]\n---------------\nError Code: INDENTATION_ERR_01\nLine: 4 (for item in list_data:)\nSolution Detail: Python is an indentation-sensitive syntax. The instruction nested underneath the iterative 'for' definition must maintain 4 whitespaces. Modified code snippet:\n\nfor item in list_data:\n    print(f"Item: {item}")  # Indented correctly`
+      }
+    };
+
+    function runBuilderSimulation() {
+      const outputWrapper = document.getElementById('builder-simulation-wrapper');
+      const outputText = document.getElementById('builder-simulation-output');
+      
+      outputWrapper.classList.remove('hidden');
+      outputText.innerText = "Querying Sandbox Engine and compiling prompt blocks...";
+      playSfx('click');
+
+      setTimeout(() => {
+        const role = document.getElementById('builder-role').value;
+        const task = document.getElementById('builder-task').value;
+        const format = document.getElementById('builder-format').value;
+
+        let response = `SIMULATED EXPERT AI PIPELINE OUTPUT:\n-------------------------------------\n\n`;
+        response += `[Role Loaded] -> Approved (${role})\n`;
+        response += `[System Framework] -> Applied Custom Logic\n\n`;
+        response += `OUTPUT LAYOUT CONTENT:\n`;
+
+        if (format.includes("table")) {
+          response += `| Topic Component | Description / Details | Target Application |\n`;
+          response += `| :--- | :--- | :--- |\n`;
+          response += `| Core Feature | Optimized operational execution model for: ${task} | High-efficiency workflows |\n`;
+          response += `| Structure | Relies directly on explicit prompt context configurations | Professional engineering suites |`;
+        } else if (format.includes("Checklist")) {
+          response += `☑ Step 1: Initialize operations for: ${task}\n☑ Step 2: Extract key logical structures from inputs.\n☑ Step 3: Format final summary blocks per strict constraints.`;
+        } else if (format.includes("JSON")) {
+          response += `{\n  "status": "success",\n  "role": "${role}",\n  "operation": "Constructing data logic",\n  "target_task": "${task}"\n}`;
+        } else {
+          response += `BEGINNING: Setting the operational system environment.\nMIDDLE: Computing core execution parameters for task: ${task}\nEND: Formatting output into final readable documentation blocks.`;
+        }
+
+        outputText.innerText = response;
+        addXP(30);
+      }, 1200);
+    }
+
+    function checkQuickFix(ans) {
+      const fb = document.getElementById('quick-fix-feedback');
+      fb.classList.remove('hidden');
+      if (ans === 'Context') {
+        fb.className = "mt-2 text-xs font-bold text-emerald-400";
+        fb.innerText = "Correct! The prompt has the Role, the Task, and the Format, but lacks Context indicating the student background constraint.";
+        addXP(20);
+      } else {
+        fb.className = "mt-2 text-xs font-bold text-red-400";
+        fb.innerText = "Not quite. Check again. We have who the AI should act as (Role), the exact command (Task), and the tabular presentation (Format), but no scenario environment context.";
+        playSfx('error');
+      }
+    }
+
+
+    // TOPIC 2 WRITING CLEAR AND SPECIFIC PROMPTS (Slider Optimizer)
+    const sliderData = {
+      1: {
+        p: "Tell me about marketing",
+        o: "Marketing is the activity of promoting and selling products or services. It includes market research and advertising to target potential clients and establish strong branding strategies."
+      },
+      2: {
+        p: "Explain the four core principles of digital marketing with real examples.",
+        o: "Digital Marketing revolves around: \n1. Content Marketing: Creating blog tutorials (e.g., HubSpot's blogs).\n2. SEO: Optimizing web layouts to rank on Google.\n3. Social Media Ads: Launching sponsored Instagram carousel posts (e.g., Nike product launches).\n4. Email Campaigns: Retargeting cart drops with custom subject headers."
+      },
+      3: {
+        p: "Act as a Chief Marketing Officer. Analyze the digital marketing strategy for a modern electric bike college startup. Structure your strategic analysis in a clean comparative Markdown Table outlining Channel, Action Item, Target Metric, and Estimated Budget.",
+        o: `| Marketing Channel | Strategic Action Item | Target Metric | Budget (Est.) |\n| :--- | :--- | :--- | :--- |\n| SEO & Blogs | Draft expert comparative guides comparing electric bike efficiency vs petrol | +40% Organic Clicks | $150 (Hosting) |\n| Campus Micro-Influencers | Sponsor student union presidents to record reels driving e-bikes | 25,000 video impressions | $400 (Vouchers) |\n| High-intent PPC Search | Target regional search keywords like 'e-bike college hostel discounts' | 8.5% CTR Conversion | $500 (Pay-Per-Click) |\n\nCMO Strategic Focus: Hyper-local targeting yields maximum conversion inside student dense neighborhoods.`
+      }
+    };
+
+    function updateClaritySlider(val) {
+      playSfx('click');
+      const data = sliderData[val];
+      document.getElementById('slider-prompt-box').innerText = `"${data.p}"`;
+      document.getElementById('slider-output-box').innerText = data.o;
+      
+      if (parseInt(val) === 3) {
+        unlockBadge('Context Master');
+      }
+    }
+
+    // Init slider position
+    setTimeout(() => { updateClaritySlider(1); }, 100);
+
+    function evaluateImprovedPrompt(id) {
+      const val = document.getElementById('improve-prompt-' + id).value.trim();
+      const fb = document.getElementById('improve-feedback-' + id);
+      fb.classList.remove('hidden');
+
+      if (val.length < 30) {
+        fb.className = "text-xs p-2.5 rounded bg-red-950/40 text-red-400 border border-red-500/20 mt-2";
+        fb.innerText = "Error: Prompt remains too vague or short. Incorporate explicit role declarations, scenario context details, and format expectations to raise quality.";
+        playSfx('error');
+        return;
+      }
+
+      // Check keywords for quality heuristics
+      let score = 40;
+      if (val.toLowerCase().includes("you are") || val.toLowerCase().includes("act as") || val.toLowerCase().includes("expert") || val.toLowerCase().includes("teacher") || val.toLowerCase().includes("analyst") || val.toLowerCase().includes("mentor")) score += 20;
+      if (val.toLowerCase().includes("student") || val.toLowerCase().includes("bca") || val.toLowerCase().includes("startup") || val.toLowerCase().includes("investor") || val.toLowerCase().includes("engineering")) score += 20;
+      if (val.toLowerCase().includes("bullet") || val.toLowerCase().includes("table") || val.toLowerCase().includes("format") || val.toLowerCase().includes("list") || val.toLowerCase().includes("analogy") || val.toLowerCase().includes("code")) score += 20;
+
+      if (score >= 80) {
+        fb.className = "text-xs p-2.5 rounded bg-emerald-950/40 text-emerald-400 border border-emerald-500/20 mt-2";
+        fb.innerHTML = `🎉 Quality Score: <strong>${score}/100 - Approved!</strong><br/>Excellent specific refinement structure. Your instructions provide outstanding context constraint layers.`;
+        addXP(25);
+      } else {
+        fb.className = "text-xs p-2.5 rounded bg-yellow-950/40 text-yellow-400 border border-yellow-500/20 mt-2";
+        fb.innerHTML = `Quality Score: <strong>${score}/100 - Intermediate</strong><br/>Decent work, but try introducing stronger role variables ("Act as an expert analyst...") and explicit formatting boundaries ("Structure your final response in bullet points...") to optimize execution.`;
+        playSfx('click');
+      }
+    }
+
+
+    // TOPIC 3 SIDE-BY-SIDE PROMPTING COMPARISON SYSTEM
+    function switchComparisonTask(task) {
+      playSfx('click');
+      state.comparisonTask = task;
+      
+      // Update buttons style
+      const btns = document.querySelectorAll('#topic-3 button');
+      btns.forEach(btn => {
+        if (btn.innerText.toLowerCase().includes(task === 'classification' ? 'sentiment' : task)) {
+          btn.className = "bg-indigo-500/20 border border-indigo-500 text-indigo-300 py-2 px-3 rounded text-xs";
+        }
+      });
+
+      renderComparisonData();
+    }
+
+    function switchComparisonTab(tab) {
+      playSfx('click');
+      state.comparisonTab = tab;
+
+      // Update Tab Visual Classes
+      const tabs = ['zero', 'few', 'role'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('btn-comp-' + t);
+        if (t === tab) {
+          btn.className = "px-4 py-2 text-cyan-400 border-b-2 border-cyan-400 font-semibold focus:outline-none";
+        } else {
+          btn.className = "px-4 py-2 text-slate-400 font-semibold focus:outline-none";
+        }
+      });
+
+      renderComparisonData();
+    }
+
+    function renderComparisonData() {
+      const task = state.comparisonTask;
+      const tab = state.comparisonTab;
+
+      let promptText = '';
+      if (task === 'classification') {
+        if (tab === 'zero') {
+          promptText = `Classify this customer review as Positive or Negative:\n"I have had much better food, service was slow"`;
+        } else if (tab === 'few') {
+          promptText = `Classify reviews with strict labels. Look at these examples:\nReview: "The burger was incredible!" -> POSITIVE\nReview: "The drink was completely flat" -> NEGATIVE\nReview: "I have had much better food, service was slow" ->`;
+        } else {
+          promptText = `You are a Senior Customer Relations Manager at a restaurant group. Analyze customer sentiments. Classify this review:\n"I have had much better food, service was slow"\n\nFormat output strictly as a JSON object: { "sentiment": "string", "reasons": ["string"] }`;
+        }
+      } else if (task === 'sql') {
+        if (tab === 'zero') {
+          promptText = `Write a SQL query to select active users with login count over 10.`;
+        } else if (tab === 'few') {
+          promptText = `Ex 1: SELECT * FROM students WHERE grade > 90;\nEx 2: SELECT * FROM items WHERE price < 50;\nTask: SQL to select active users with login count over 10.`;
+        } else {
+          promptText = `Act as an expert Database Administrator optimizing enterprise queries. Write a clean PostgreSQL query to select active users with login count over 10. Provide performance optimization suggestions as SQL comments above.`;
+        }
+      } else if (task === 'resume') {
+        if (tab === 'zero') {
+          promptText = `Write a resume profile summary for a student.`;
+        } else if (tab === 'few') {
+          promptText = `Summary Ex: "Dynamic computer science student offering 1 year internship experience in backend databases..."\n\nTask: Profile summary for a student skilled in Java and database scripting.`;
+        } else {
+          promptText = `You are an elite corporate technical recruiter. Rewrite this student profile into a compelling, metrics-driven professional summary fit for a junior developer position at a global finance tech firm.`;
+        }
+      } else {
+        if (tab === 'zero') {
+          promptText = `Fix this code: for i in range(5) print(i)`;
+        } else if (tab === 'few') {
+          promptText = `Ex 1: def add(a,b) return a+b -> Fix: added missing colon on line 1.\nTask: Fix: for i in range(5) print(i)`;
+        } else {
+          promptText = `You are a python systems consultant. Identify syntax vulnerabilities and bugs inside this snippet. Fix it, explain the root cause, and provide optimized variable alternatives: for i in range(5) print(i)`;
+        }
+      }
+
+      document.getElementById('compare-prompt-box').innerText = promptText;
+      document.getElementById('compare-output-box').innerText = simulationResponses[task][tab];
+    }
+
+    // Init comparative panel
+    setTimeout(renderComparisonData, 150);
+
+    function guessPrediction(choice) {
+      const fb = document.getElementById('prediction-feedback');
+      fb.classList.remove('hidden');
+
+      if (choice === 'few') {
+        fb.className = "mt-2 text-xs font-bold text-emerald-400";
+        fb.innerText = "Correct! Few-Shot prompting is unmatched for pattern matching and structural tone emulation because you supply physical working examples.";
+        addXP(30);
+        unlockBadge('AI Strategist');
+      } else {
+        fb.className = "mt-2 text-xs font-bold text-red-400";
+        fb.innerText = "Not quite. While Role-Based gives expertise, providing explicit input-output examples (Few-Shot) is the most reliable way to enforce strict formatting patterns.";
+        playSfx('error');
+      }
+    }
+
+
+    // TOPIC 4 PROMPT REFINEMENT & ITERATION SYSTEM
+    const evolutionSteps = {
+      1: {
+        title: "1. Basic Draft",
+        p: "Write notes on DBMS",
+        o: "DBMS stands for Database Management System. It is a program that allows you to store, delete, insert, update and manipulate records. Common types include relational databases."
+      },
+      2: {
+        title: "2. Added Context & Target Audience",
+        p: "You are a DBMS teacher. Write notes on DBMS for a first-year BCA student preparing for their final theory term exam.",
+        o: "Welcome BCA Freshers! Database Management Systems (DBMS) are software engines that store structured data. For your term exam, remember:\n- Key Goal: Minimize duplicate entry (redundancy).\n- Major Type: Relational databases using SQL. \n- Target audience: Beginner developers."
+      },
+      3: {
+        title: "3. Defined Format & Depth",
+        p: "You are a DBMS teacher. Write notes on DBMS for a first-year BCA student. Present your summary as structured revision bullet points. Highlight key terms in bold.",
+        o: "📌 **BCA Revision Notes: DBMS**\n- **Database Management System**: Software coordinating queries between storage disk and human applications.\n- **Data Integrity**: Enforcing key constraints so data records remain correct.\n- **Redundancy**: Wasted space from duplicating files. Relational models reduce this using normalizations."
+      },
+      4: {
+        title: "4. Full Constraints & Real-World Case Studies",
+        p: "You are a DBMS teacher. Write notes on DBMS for a first-year BCA student. Present your summary as structured bullet points. Contrast relational tables vs non-relational database models. Use Netflix's user storage vs a traditional college registrar record systems to explain.",
+        o: "🌟 **Enterprise BCA Exam Guide: Relational vs NoSQL**\n\n1. **Relational DBMS (RDBMS)**:\n- *Structure*: Strict SQL tables linked by relationships (Primary Key to Foreign Key).\n- *Real-world Analogy*: Your college registrar storing Student Roll No, Class Code, and Grade Cards.\n- *Advantage*: High accuracy.\n\n2. **Non-Relational (NoSQL)**:\n- *Structure*: Flexible document clusters.\n- *Netflix Example*: Storing billions of varying user profile icons, regional viewing history lists, and trailer bookmarks instantly.\n- *Advantage*: Extreme speed and scalable growth."
+      }
+    };
+
+    function progressEvolution() {
+      state.evolutionStep++;
+      if (state.evolutionStep > 4) state.evolutionStep = 1;
+
+      playSfx('click');
+      const data = evolutionSteps[state.evolutionStep];
+      document.getElementById('evolve-level-text').innerText = data.title;
+      document.getElementById('evolve-prompt-box').innerText = `"${data.p}"`;
+      document.getElementById('evolve-output-box').innerText = data.o;
+    }
+
+    function submitRefineStep(stepNum) {
+      playSfx('click');
+      const inputVal = document.getElementById('refine-inp-' + stepNum).value.trim();
+
+      if (inputVal.length < 15) {
+        showNotification("Warning", "Input too brief to construct optimal prompt constraints.");
+        playSfx('error');
+        return;
+      }
+
+      // Hide current step, unlock next
+      document.getElementById(`refine-step-${stepNum}-ui`).classList.add('hidden');
+      const nextStep = stepNum + 1;
+      const nextUi = document.getElementById(`refine-step-${nextStep}-ui`);
+      
+      if (nextUi) {
+        nextUi.classList.remove('hidden');
+        addXP(20);
+      } else {
+        // All steps locked
+        document.getElementById('refinement-summary-ui').classList.remove('hidden');
+        const finalPrompt = `Role: [You are a coding teacher]. Context: [${document.getElementById('refine-inp-1').value}]. Task: [Explain Arrays]. Format/Constraints: [${document.getElementById('refine-inp-2').value}]. Specific analog/example: [${document.getElementById('refine-inp-3').value}].`;
+        document.getElementById('final-refine-prompt').innerText = finalPrompt;
+        unlockBadge('Iteration Pro');
+      }
+    }
+
+
+    // TOPIC 5 USING PROMPTS FOR REAL TASKS (Domain Hub)
+    const domainData = {
+      learning: {
+        title: "Learning & Concept Study Template",
+        desc: "Convert dense theoretical papers or textbook content into crisp, bite-sized tutorials using clear cognitive analogies.",
+        template: `You are an expert, encouraging tutor. Explain [Concept Name] to a [Target Audience] with no prior understanding of the subject.\n\nStructure your explanation as follows:\n1. Core Definition (1 sentence)\n2. Easy-to-Understand Analogy\n3. High-level Architecture / Bullet steps\n4. Simple Q&A scenario.`,
+        output: `📌 CONCEPT EXPLAINER: API (Application Programming Interface)\n\n1. **Core Definition**: An API is an intermediary software system allowing two separate programs to communicate and trade data seamlessly.\n\n2. **The Analogy**: Imagine you are a guest sitting at a restaurant table. The kitchen is the database system preparing the food. The API is the *Waiter* taking your order, running to the kitchen, and carrying the food plate back to your table.\n\n3. **How it Works Step-by-Step**:\n- **Client Request**: Application fires user query (e.g. click 'Check Weather').\n- **API End-Point**: Request is safely structured and ferried over the web.\n- **Database Processing**: Server computes request and formats weather details.\n- **API Response**: Waiter returns weather data to user screen.\n\n4. **Student Q&A**:\n*Q: Can software run without APIs?*\n*A: Yes, but it becomes isolated. Without APIs, booking apps couldn't trigger Google Maps, and e-commerce stores couldn't process stripe payments.*`
+      },
+      research: {
+        title: "Structured Research Comparison Template",
+        desc: "Automate complex literature tracking by generating side-by-side matrices comparing architecture paradigms.",
+        template: `You are a Senior Technical Systems Analyst. Conduct an objective architectural comparison of [Tech A] vs [Tech B] for [Enterprise Scenario Context].\n\nFormat your findings as a markdown table with headers: Category, Tech A, Tech B, and Winner/Justification.\nFollow with a 2-sentence summary outlining primary adoption risks.`,
+        output: `📊 SYSTEMS ARCHITECT ANALYTICS REPORT: SQL vs NoSQL for Fintech Startups\n\n| Assessment Category | SQL (PostgreSQL) | NoSQL (MongoDB) | Architectural Recommendation |\n| :--- | :--- | :--- | :--- |\n| **Data Consistency** | ACID Compliant, strictly consistent | Eventual consistency layout | **SQL**: Essential for ledgers/transactions. |\n| **Scale Model** | Vertical scaling | Horizontal scaling | **NoSQL**: Preferred for large unstructured data logs. |\n| **Query Latency** | Complex joins delay queries | Ultra-low direct JSON lookups | **NoSQL**: Faster for flat documents lookups. |\n\nPrimary Adoption Risk Summary:\nIntegrating SQL limits horizontal database growth scalability during global customer traffic spikes. Conversely, adopting NoSQL poses transaction tracking auditing vulnerabilities during unstable cloud database network splits.`
+      },
+      coding: {
+        title: "Practical Code Debugger Template",
+        desc: "Pinpoint compilation syntax errors, describe root causes, and refactor code matching modern OOP parameters.",
+        template: `You are a Principal Software Engineer. Analyze this broken [Language] script:\n\`\`\`[Code]\`\`\`\n\nYour task:\n1. Pinpoint and describe the syntax or logic errors.\n2. Write a refactored, highly optimized, commented version.\n3. Detail 3 security/best-practice guidelines.`,
+        output: `💻 PRINCIPAL ENGINEER DEBUGGING LOG\n\n**Syntax Error Identified**: The original Javascript script defined 'const data = []' but iteratively attempted to re-assign 'data = 5' on line 3, causing a critical Runtime TypeError.\n\nRefactored, Documented Solution:\n\`\`\`javascript\n// Initialize mutable variable using 'let' instead of constant constraint\nlet dataRecords = [];\n\nfunction ingestRecord(record) {\n  if (!record) return; // Prevent null pointer ingestion\n  dataRecords.push(record);\n}\n\`\`\`\n\nEngineering Security Guidelines:\n1. Always validate parameter existence prior to array insertions.\n2. Prefer strict typing frameworks (TypeScript) to isolate compile errors.\n3. Enforce immutability loops where variables shouldn't undergo modification.`
+      },
+      content: {
+        title: "Cold Investor Outreach Template",
+        desc: "Draft highly compelling, short, conversion-optimized pitch emails designed to capture technical VC attention.",
+        template: `You are a VC Pitch Coach. Write a professional, punchy investor outreach cold email for a startup building [App Concept] aiming at [Target Audience].\n\nConstraints:\n- Under 150 words\n- Clear quantitative metric in sentence 2\n- Immediate CTA requesting a 10-minute briefing.`,
+        output: `📨 SUBJECT: Pitch Briefing: AI-Powered Study Planner for Tech Undergrads\n\nDear Investor,\n\nI am writing on behalf of StudyAI, an ecosystem automating college study schedulers. \n\nDuring our 3-week pilot at BCA College campus, over 4,200 active students registered, reducing examination revision hours by 35% using our specialized machine-learning syllabus parser. We are targeting a regional undergrad demographic of 4 million students.\n\nGiven your successful investments in campus social systems, we believe our project matches your portfolio criteria.\n\nAre you available for a brief, 10-minute virtual demonstration call this coming Thursday at 3 PM?\n\nSincerely,\nFounding Architect, StudyAI`
+      }
+    };
+
+    function switchDomainCard(dom) {
+      playSfx('click');
+      // Highlight card active state
+      const cards = document.querySelectorAll('.card-domain');
+      cards.forEach(c => c.classList.remove('active-domain-card', 'border-cyan-500/40', 'border-indigo-500/40', 'border-purple-500/40', 'border-pink-500/40'));
+      
+      const activeCard = document.getElementById('card-dom-' + dom);
+      activeCard.classList.add('active-domain-card');
+      if (dom === 'learning') activeCard.classList.add('border-cyan-500/40');
+      if (dom === 'research') activeCard.classList.add('border-indigo-500/40');
+      if (dom === 'coding') activeCard.classList.add('border-purple-500/40');
+      if (dom === 'content') activeCard.classList.add('border-pink-500/40');
+
+      // Update content
+      const data = domainData[dom];
+      document.getElementById('domain-title').innerText = data.title;
+      document.getElementById('domain-desc').innerText = data.desc;
+      document.getElementById('domain-template-box').innerText = data.template;
+      document.getElementById('domain-output-box').innerText = data.output;
+    }
+
+    // Init domains
+    setTimeout(() => { switchDomainCard('learning'); }, 180);
+
+    const labTasks = {
+      notes: {
+        ph: "You are a teacher. Explain photosynthesis basics to first-year commerce college students using a simple business-ecosystem analogy in bullet points.",
+        kws: ["teacher", "photosynthesis", "commerce", "analogy", "bullet"]
+      },
+      code: {
+        ph: "You are a software engineer. Explain the binary search algorithm to a freshman using a phonebook-search analogy in 3 steps with pseudocode.",
+        kws: ["engineer", "binary search", "analogy", "phonebook", "pseudocode"]
+      },
+      research: {
+        ph: "You are a technical analyst. Write a comparison of SQL vs NoSQL database architectures. Present it in a 3-row markdown table.",
+        kws: ["analyst", "sql", "nosql", "comparison", "table"]
+      },
+      content: {
+        ph: "You are an HR director. Draft a short, welcoming cold recruitment email template to a junior full-stack coder. Limit to 100 words.",
+        kws: ["hr", "welcoming", "recruitment", "email", "full-stack", "words"]
+      }
+    };
+
+    function setLabTask(task) {
+      playSfx('click');
+      state.labTask = task;
+
+      // Class manipulation
+      const btnIds = ['btn-lab-notes', 'btn-lab-code', 'btn-lab-research', 'btn-lab-content'];
+      btnIds.forEach(id => {
+        const btn = document.getElementById(id);
+        if (id.includes(task)) {
+          btn.className = "bg-cyan-500 text-slate-950 font-bold py-1.5 px-3 rounded text-xs";
+        } else {
+          btn.className = "bg-slate-900 border border-slate-700 py-1.5 px-3 rounded text-slate-200 text-xs hover:bg-white/5";
+        }
+      });
+
+      document.getElementById('lab-prompt-input').value = labTasks[task].ph;
+    }
+
+    // Init lab
+    setTimeout(() => { setLabTask('notes'); }, 200);
+
+    async function evaluateLabPrompt() {
+      playSfx('click');
+      const input = document.getElementById('lab-prompt-input').value.trim();
+      const wrap = document.getElementById('lab-eval-wrapper');
+      const scoreEl = document.getElementById('lab-score');
+      const feedbackEl = document.getElementById('lab-feedback-text');
+
+      wrap.classList.remove('hidden');
+      scoreEl.innerText = "Evaluating...";
+      feedbackEl.innerText = "Ingesting prompt arguments and querying evaluation node...";
+
+      if (state.apiKey) {
+        // LIVE GEMINI EVALUATION
+        try {
+          const sysPrompt = "You are an elite prompt engineering evaluator. Analyze the user's prompt. Score it from 0 to 100 based on structure (Role, Context, Task, Format constraints). Output must be JSON format with schema: { \"score\": 85, \"feedback\": \"Excellent but...\" }";
+          const res = await fetch(`https://genergenerativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${state.apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: `Evaluate this prompt: ${input}` }] }],
+              systemInstruction: { parts: [{ text: sysPrompt }] },
+              generationConfig: { responseMimeType: "application/json" }
+            })
+          });
+          const data = await res.json();
+          const parsed = JSON.parse(data.candidates[0].content.parts[0].text);
+          
+          scoreEl.innerText = `${parsed.score}/100`;
+          feedbackEl.innerText = `[Live AI Evaluation Feedback]:\n\n${parsed.feedback}`;
+          
+          if (parsed.score >= 80) {
+            addXP(40);
+          }
+        } catch (err) {
+          console.error(err);
+          feedbackEl.innerText = "⚠️ Gemini live evaluation failed or key is incorrect. Falling back to robust local heuristic rules system...";
+          runLocalLabEvaluation(input, scoreEl, feedbackEl);
+        }
+      } else {
+        // Fallback to rules-based local evaluator
+        setTimeout(() => {
+          runLocalLabEvaluation(input, scoreEl, feedbackEl);
+        }, 1000);
+      }
+    }
+
+    function runLocalLabEvaluation(input, scoreEl, feedbackEl) {
+      if (input.length < 25) {
+        scoreEl.innerText = "35/100";
+        feedbackEl.innerText = "Diagnostic Report:\n- Critic: Prompt is highly vague and lacks necessary structural detail.\n- Action Item: Explicitly append professional role expectations ('Act as an experienced backend manager...') and format limits.";
+        playSfx('error');
+        return;
+      }
+
+      const activeTaskData = labTasks[state.labTask];
+      let score = 50;
+      let matchingKwList = [];
+
+      // Look for custom target keywords mapping
+      activeTaskData.kws.forEach(kw => {
+        if (input.toLowerCase().includes(kw)) {
+          score += 10;
+          matchingKwList.push(kw);
+        }
+      });
+
+      // Extra bonus structural cues
+      if (input.toLowerCase().includes("bullet") || input.toLowerCase().includes("table") || input.toLowerCase().includes("list") || input.toLowerCase().includes("format")) {
+        score += 10;
+      }
+
+      score = Math.min(score, 100);
+      scoreEl.innerText = `${score}/100`;
+
+      let reportText = `🏆 Sandbox Structural Prompt Diagnosed!\n\nMetrics Analyzed:\n- Structured Components: Unlocked & mapped successfully.\n- Key Parameter Match: Found relevant constraints [${matchingKwList.join(', ')}].\n\nSuggested Next Improvement Iteration:\n`;
+      if (score < 80) {
+        reportText += "Ensure you always explicitly describe how you want the data laid out ('Construct a markdown table...'). This minimizes vague prompt layout risks.";
+      } else {
+        reportText += "Outstanding Prompt Alignment! You have layered all core Day 2 tenets correctly. Safe to proceed with major operations.";
+        addXP(40);
+      }
+      feedbackEl.innerText = reportText;
+    }
+
+
+    // TOPIC 6 PRACTICAL PROMPT ARENA CHALLENGES
+    const arenaQuests = {
+      1: {
+        title: "Quest 1: The Ultimate Study Guide Prompt",
+        rules: "Objective: Write a prompt instructing the AI to act as a Professor of Computer Science. Have it explain 'Assembly Language basics' to a BCS freshman. Output must be a clear 3-step analogy study guide with a mock-code snippet comparing high-level vs assembly."
+      },
+      2: {
+        title: "Quest 2: Network Cheat-sheet Creator",
+        rules: "Objective: Write a prompt acting as a Network Engineer. Instruct the AI to construct an indexing cheat-sheet explaining OSI 7-layer layouts to first-year engineering candidates. Present as a strict, clean tabular matrix."
+      },
+      3: {
+        title: "Quest 3: Tech Interview Sandbox",
+        rules: "Objective: Write a prompt acting as a Senior technical Recruiter at Google. Instruct the AI to mock-interview a BCA senior for a frontend react role. Instruct it to generate 3 tough questions and evaluate inputs conversant with performance metrics."
+      },
+      4: {
+        title: "Quest 4: Technology Narrative Launch",
+        rules: "Objective: Write a prompt acting as a creative copy writer. Assemble an event launch promotional script highlighting a collegiate Hackathon focused on sustainability AI app creation. Keep it under 150 words."
+      }
+    };
+
+    function selectArenaChallenge(qId) {
+      playSfx('click');
+      state.arenaChallenge = qId;
+
+      // Toggle active states
+      for (let i = 1; i <= 4; i++) {
+        const btn = document.getElementById('btn-arena-' + i);
+        if (i === qId) {
+          btn.classList.add('border-pink-500');
+          btn.classList.remove('border-slate-800');
+        } else {
+          btn.classList.remove('border-pink-500');
+          btn.classList.add('border-slate-800');
+        }
+      }
+
+      const q = arenaQuests[qId];
+      document.getElementById('arena-quest-title').innerText = q.title;
+      document.getElementById('arena-quest-rules').innerText = q.rules;
+      document.getElementById('arena-result-wrapper').classList.add('hidden');
+      document.getElementById('arena-prompt-input').value = '';
+    }
+
+    function submitArenaPrompt() {
+      playSfx('click');
+      const input = document.getElementById('arena-prompt-input').value.trim();
+      const wrap = document.getElementById('arena-result-wrapper');
+      const scoreBadge = document.getElementById('arena-score-badge');
+      const feedbackEl = document.getElementById('arena-feedback-text');
+
+      if (input.length < 30) {
+        showNotification("Incorrect Alignment", "Your arena prompt submission is too short to pass automated evaluator benchmarks.");
+        playSfx('error');
+        return;
+      }
+
+      wrap.classList.remove('hidden');
+      scoreBadge.innerText = "Evaluating...";
+      feedbackEl.innerText = "Analyzing contestant structures against academic guidelines...";
+
+      setTimeout(() => {
+        // Heuristic scoring for gamification
+        let baseScore = 65;
+        if (input.toLowerCase().includes("you are") || input.toLowerCase().includes("act as")) baseScore += 10;
+        if (input.toLowerCase().includes("student") || input.toLowerCase().includes("freshman") || input.toLowerCase().includes("bca") || input.toLowerCase().includes("bcs")) baseScore += 10;
+        if (input.toLowerCase().includes("table") || input.toLowerCase().includes("analogy") || input.toLowerCase().includes("snippet") || input.toLowerCase().includes("script") || input.toLowerCase().includes("questions")) baseScore += 10;
+        if (input.length > 100) baseScore += 5;
+
+        baseScore = Math.min(baseScore, 100);
+        scoreBadge.innerText = `Score: ${baseScore}/100`;
+
+        let feedback = '';
+        if (baseScore >= 85) {
+          feedback = `🎉 Champion Submission! You scored [${baseScore}/100] in the Prompt Arena.\n\nYour layout structure maps all Day 2 Smart Prompt components flawlessly. This submission successfully locks the 'Prompt Architect' course badge, pushing your global user profile up on the live leaderboard!`;
+          unlockBadge('Prompt Architect');
+          addXP(50);
+          updateLeaderboard(baseScore);
+        } else {
+          feedback = `Consolation Entry: You scored [${baseScore}/100].\n\nYour prompt has a solid logical foundation but lacked explicit formatting constraints or specific domain role assignments. Revise and submit an optimized iteration to claim the master badge!`;
+          playSfx('error');
+        }
+
+        feedbackEl.innerText = feedback;
+      }, 1500);
+    }
+
+    function updateLeaderboard(score) {
+      // Simulate moving up the scoreboard
+      state.xp += score;
+      document.getElementById('rank-display').innerText = "#4,320";
+      document.getElementById('grad-rank').innerText = "#4,320";
+      
+      const list = document.getElementById('leaderboard-list');
+      list.innerHTML = `
+        <div class="flex justify-between p-1.5 bg-cyan-500/10 rounded">
+          <span>⭐ You (${state.userName})</span>
+          <span class="font-mono text-cyan-400 font-bold">${state.xp} XP</span>
+        </div>
+        <div class="flex justify-between p-1.5 hover:bg-white/5 rounded">
+          <span>🏆 1. Aarav S. (BCA)</span>
+          <span class="font-mono text-slate-400">1,450 XP</span>
+        </div>
+        <div class="flex justify-between p-1.5 hover:bg-white/5 rounded">
+          <span>🥈 2. Ananya K. (BTech)</span>
+          <span class="font-mono text-slate-400">1,390 XP</span>
+        </div>
+        <div class="flex justify-between p-1.5 hover:bg-white/5 rounded">
+          <span>🥉 3. Rahul Verma (BCS)</span>
+          <span class="font-mono text-slate-400">1,320 XP</span>
+        </div>
+      `;
+    }
+
+
+    // FINAL MASTER PROMPT CHALLENGE & GRADUATION FLOW
+    function syncFinalPrompt() {
+      const role = document.getElementById('final-role').value.trim();
+      const context = document.getElementById('final-context').value.trim();
+      const task = document.getElementById('final-task').value.trim();
+      const format = document.getElementById('final-format').value.trim();
+
+      const combined = `Role: [${role || '...'}]\nContext: [${context || '...'}]\nTask: [${task || '...'}]\nFormat: [${format || '...'}]`;
+      document.getElementById('final-compiled-box').innerText = combined;
+    }
+
+    async function runFinalMasterEvaluation() {
+      playSfx('click');
+      const role = document.getElementById('final-role').value.trim();
+      const context = document.getElementById('final-context').value.trim();
+      const task = document.getElementById('final-task').value.trim();
+      const format = document.getElementById('final-format').value.trim();
+
+      if (!role || !context || !task || !format) {
+        showNotification("Action Required", "Complete all 4 operational block fields to compile the Master Prompt.");
+        playSfx('error');
+        return;
+      }
+
+      const wrap = document.getElementById('final-result-card');
+      const scoreEl = document.getElementById('final-eval-score');
+      const feedbackEl = document.getElementById('final-eval-feedback');
+
+      wrap.classList.remove('hidden');
+      scoreEl.innerText = "Evaluating System Prompt...";
+      feedbackEl.innerText = "Re-analyzing logical structures through automated academic checkers...";
+
+      const compiledStr = `You are a [${role}]. Given scenario [${context}]. Please perform [${task}]. Render results matching constraints [${format}].`;
+
+      if (state.apiKey) {
+        try {
+          const sysPrompt = "You are a highly analytical prompt reviewer. Score the user's compiled prompt from 0 to 100 based on the balance of Role, Context, Task, and Format. Return structured JSON matching: { \"score\": 90, \"critique\": \"Awesome!\" }";
+          const res = await fetch(`https://genergenerativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${state.apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: `Evaluate compiled prompt: ${compiledStr}` }] }],
+              systemInstruction: { parts: [{ text: sysPrompt }] },
+              generationConfig: { responseMimeType: "application/json" }
+            })
+          });
+          const data = await res.json();
+          const parsed = JSON.parse(data.candidates[0].content.parts[0].text);
+
+          state.finalScore = parsed.score;
+          scoreEl.innerText = `Evaluation Score: ${parsed.score}/100`;
+          feedbackEl.innerText = `[Academic Evaluation Feedback]:\n\n${parsed.critique}`;
+        } catch (err) {
+          console.error(err);
+          feedbackEl.innerText = "⚠️ Live Gemini evaluation failed. Defaulting to local model evaluator...";
+          runLocalFinalEvaluation(role, context, task, format, scoreEl, feedbackEl);
+        }
+      } else {
+        setTimeout(() => {
+          runLocalFinalEvaluation(role, context, task, format, scoreEl, feedbackEl);
+        }, 1500);
+      }
+    }
+
+    function runLocalFinalEvaluation(role, context, task, format, scoreEl, feedbackEl) {
+      let score = 70;
+      if (role.length > 10) score += 10;
+      if (context.length > 15) score += 10;
+      if (task.length > 15) score += 5;
+      if (format.length > 10) score += 5;
+
+      score = Math.min(score, 100);
+      state.finalScore = score;
+      scoreEl.innerText = `Evaluation Score: ${score}/100`;
+
+      feedbackEl.innerText = `Excellent Master Design!\n\nStructural Score Breakdown:\n- Role Integrity: Passed with distinction.\n- Context Granularity: Checked and parsed accurately.\n- Task Specificity: Confirmed.\n- Output Presentation Constraints: Included.\n\nYour Compiled Master Prompt is verified as Grade-A production material. Complete the quick reflection card underneath to unlock graduation features.`;
+      addXP(50);
+    }
+
+    function submitReflection() {
+      playSfx('click');
+      const sk = document.getElementById('reflect-skills').value.trim();
+      const tc = document.getElementById('reflect-techs').value.trim();
+      const cs = document.getElementById('reflect-case').value.trim();
+
+      if (!sk || !tc || !cs) {
+        showNotification("Action Required", "Answer all cognitive mapping reflection questions to qualify for course certification.");
+        playSfx('error');
+        return;
+      }
+
+      // Transition to Graduation
+      document.getElementById('final-challenge').classList.add('hidden');
+      const gradSec = document.getElementById('graduation-section');
+      gradSec.classList.remove('hidden');
+      gradSec.scrollIntoView({ behavior: 'smooth' });
+
+      // Build Certificate Metadata
+      state.isGraduated = true;
+      document.getElementById('grad-xp').innerText = `${state.xp} XP`;
+      document.getElementById('cert-verification-id').innerText = `G-P2-${Math.floor(Math.random() * 90000) + 10000}`;
+      
+      triggerConfetti();
+      playSfx('success');
+    }
+
+    function printCertificate() {
+      playSfx('click');
+      window.print();
+    }
+  </script>
+</body>
+</html>
